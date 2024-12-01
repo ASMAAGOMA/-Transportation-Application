@@ -3,6 +3,7 @@ import React from 'react';
 import Button from './Button';
 import NavLink from './NavLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
 import { 
   faBell,
   faGear
@@ -16,8 +17,8 @@ const Header = () => (
       <NavLink href="#">Profile</NavLink>
     </nav>
     <div className="flex gap-4 items-center">
-      <Button variant="secondary">Login</Button>
-      <Button>Sign up</Button>
+      <Link to="/login"><Button variant="secondary">Login</Button></Link>
+      <Link to="/signup"><Button>Sign up</Button></Link>
       <FontAwesomeIcon icon={faGear} className="w-6 h-6 text-gray-900" />
       <FontAwesomeIcon icon={faBell} className="w-6 h-6 text-gray-900" />
     </div>
