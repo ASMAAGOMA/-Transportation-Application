@@ -1,9 +1,12 @@
 import React from 'react';
 
-const Logo = () => (
-    <div className="w-8 h-8 bg-indigo-500 text-white flex items-center justify-center rounded">
-      A
-    </div>
-  );
-  
+const Logo = ({ image, altText = "Logo" }) => (
+  <div className="w-[60px] h-[60px] flex items-center justify-center rounded-full overflow-hidden">
+    {image ? (
+      <img src={image} alt={altText} className="w-full h-full object-cover" />
+    ) : (
+      <span className="text-white">A</span>
+    )}
+  </div>
+);
 export default Logo;

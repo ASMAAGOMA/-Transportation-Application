@@ -5,7 +5,7 @@ import SearchForm from './SearchForm';
 const HeroSection = () => (
     <section className="relative h-96 mb-12">
       <img 
-        src="/api/placeholder/1200/400"
+        src="/images/first big one_enhanced.jpg"
         alt="Forest path"
         className="w-full h-full object-cover"
       />

@@ -8,28 +8,28 @@ const UpcomingRides = () => (
           destination="Paris"
           date="15th November"
           duration={5}
-          image="/api/placeholder/500/300"
+          image="/images/up2_enhanced.jpg"
           action="Change"
         />
         <RideCard 
           destination="New York"
           date="22nd November"
           duration={8}
-          image="/api/placeholder/500/300"
+          image="/images/up1_enhanced.jpg"
           action="Get Ticket Photo"
         />
         <RideCard 
           destination="Sydney"
           date="28th November"
           duration={12}
-          image="/api/placeholder/500/300"
+          image="/images/up4_enhanced.jpg"
           action="Change"
         />
         <RideCard 
           destination="Rome"
           date="5th December"
           duration={3}
-          image="/api/placeholder/500/300"
+          image="/images/up3_enhanced.jpg"
           action="Get Ticket Photo"
         />
       </div>
