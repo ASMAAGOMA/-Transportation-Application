@@ -1,21 +1,25 @@
 import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import './index.css';  // Make sure this import is present
-import './globals.css'
-import { BrowserRouter as Router, Routes, Route  ,Navigate } from 'react-router-dom';
-import Login from "./components/login";
-import SignUp from "./components/sign-up";
+import Login from './components/Login';
+import SignUp from './components/Signup';
+import Dashboard from './components/Dashboard';
+import './index.css';
+import './globals.css';
 
 function App() {
   return (
-    
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-      </Routes>
-    </Router>
+    <Routes>
+      {/* Auth routes without Layout */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
+      
+      {/* Protected routes with Layout */}
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Dashboard />} />
+        {/* Add other protected routes here */}
+      </Route>
+    </Routes>
   );
 }
 

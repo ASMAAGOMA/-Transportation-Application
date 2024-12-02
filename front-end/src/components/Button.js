@@ -1,7 +1,8 @@
 import React from 'react';
 
-const Button = ({ variant = 'primary', children }) => (
+const Button = ({ variant = 'primary', children, onClick }) => (
   <button 
+    onClick={onClick}
     className={`px-8 py-1.5 rounded-lg transition-all duration-200 hover:bg-indigo-600 ${
       variant === 'primary' 
         ? 'bg-indigo-600 text-white hover:text-white' 
