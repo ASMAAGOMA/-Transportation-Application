@@ -1,0 +1,23 @@
+20241203	04:15:40	f76d77cd-60c9-48d8-a44f-6b7a7188c5e8	TypeError: User.find is not a function	GET	/users	undefined
+20241203	04:16:58	b1f5c056-5adc-4110-9a9b-92c3ad24c1d2	TypeError: User.find is not a function	GET	/users	undefined
+20241203	04:39:11	9dbd4709-aa2e-40dd-a4ac-a66f2d6ddf38	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:39:41	831cea6f-dc67-45d9-86ea-f4356b5eb36d	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:41:00	110475c6-8338-4517-8f64-d5c962a6aefa	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:42:32	d881e389-a86b-4ccd-a774-293d89dd1496	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:48:50	122ed135-f281-4030-9626-2aeff9be14c8	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:48:56	ec8178f8-3e80-44e1-9f9a-f39f7fe4fadb	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:49:22	bb02eead-6718-48cb-abe9-767f10b7e534	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:49:24	a60a3dc3-fb1f-4686-8db1-be58a968bd57	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:49:31	4d244560-cd44-4c55-a20e-eab958c6f81d	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:52:53	37b9446e-9f96-4be3-bf45-60d2e1a22be0	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:52:55	ec992855-7eb0-44d7-8f31-da90a562f47d	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:57:15	3e5f07ca-f823-490d-b410-4183ac1db559	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:57:57	6862e400-e232-4860-bd55-00bfdf58260a	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:57:59	54857af1-bc1f-4a99-8a49-155d36c095b9	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	04:58:55	6df3af25-f1c4-45ab-beb6-4b467320a73a	ValidationError: User validation failed: email: Path `email` is required.	POST	/users	undefined
+20241203	06:30:13	b685d8b3-fda4-47ca-9a85-0642c71cb3d5	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
+20241203	06:30:56	1ef3b661-9bfa-46df-a294-06e3a91682d8	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
+20241203	06:31:47	045eabf5-ce7f-47aa-8999-67e8e610ec33	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
+20241203	06:51:18	e310b21d-6f35-4d50-8075-22706ed12656	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
+20241203	19:32:36	aaf6d1f3-96c7-4c38-ac8c-7f69dcbc8ef9	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
+20241203	19:53:40	aa156d1b-6eca-45a5-bc94-8966c5bf5201	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000

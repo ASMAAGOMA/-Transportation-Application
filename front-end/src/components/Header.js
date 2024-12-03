@@ -3,16 +3,20 @@ import { Link } from 'react-router-dom';
 import Button from './Button';
 import NavLink from './NavLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faGear, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
   return (
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">
       <nav className="flex gap-6">
         <NavLink href="#" active>Booking</NavLink>
-        <NavLink href="#">All trips</NavLink>
+        <Link to="/" className="text-gray-700 hover:text-gray-900">
+          All Trips
+        </Link>
         <NavLink href="#">Pending trips</NavLink>
-        <NavLink href="#">Profile</NavLink>
+        <Link to="/profile" className="text-gray-700 hover:text-gray-900">
+          Profile
+        </Link>
       </nav>
       <div className="flex gap-4 items-center">
         <Link to="/login">

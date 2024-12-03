@@ -1,23 +1,54 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import Layout from './components/Layout';
-import Login from './components/Login';
-import SignUp from './components/Signup';
+import Login from './features/auth/Login';
+import SignUp from './features/auth/Register';
 import Dashboard from './components/Dashboard';
+import Profile from './components/Profile';
+import RequireAuth from './components/RequireAuth';
+import PersistLogin from './features/auth/PersistLogin';
+import { selectCurrentToken } from './features/auth/authSlice';
+import { useRefreshMutation } from './features/auth/authApiSlice';
+
 import './index.css';
 import './globals.css';
 
 function App() {
+  const token = useSelector(selectCurrentToken);
+  const [refresh] = useRefreshMutation();
+
+  useEffect(() => {
+    const verifyRefreshToken = async () => {
+      console.log('verifying refresh token');
+      try {
+        await refresh().unwrap();
+        console.log('refresh token still valid');
+      } catch (err) {
+        console.error('refresh token expired');
+      }
+    }
+
+    if (!token) {
+      verifyRefreshToken();
+    }
+  }, [token, refresh]);
+
   return (
     <Routes>
-      {/* Auth routes without Layout */}
+      {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       
-      {/* Protected routes with Layout */}
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        {/* Add other protected routes here */}
+      {/* Protected routes */}
+      <Route element={<PersistLogin />}>
+        <Route element={<RequireAuth />}>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+            {/* Add other protected routes here */}
+          </Route>
+        </Route>
       </Route>
     </Routes>
   );
