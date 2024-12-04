@@ -1,22 +1,46 @@
+// Header.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
 import Button from './Button';
 import NavLink from './NavLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faGear, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
+  const location = useLocation();
+  const scrollToUpcoming = useScrollToElement('upcoming-rides');
+
   return (
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">
       <nav className="flex gap-6">
-        <NavLink href="#" active>Booking</NavLink>
-        <Link to="/" className="text-gray-700 hover:text-gray-900">
-          All Trips
-        </Link>
-        <NavLink href="#">Pending trips</NavLink>
-        <Link to="/profile" className="text-gray-700 hover:text-gray-900">
+        <NavLink 
+          to="/booking" 
+          active={location.pathname === '/booking'}
+        >
+          Booking
+        </NavLink>
+        <NavLink 
+          to="/" 
+          active={location.pathname === '/'}
+        >
+          <span onClick={(e) => {
+            e.preventDefault();
+            scrollToUpcoming();
+          }}>All Trips</span>
+        </NavLink>
+        <NavLink 
+          to="/pending" 
+          active={location.pathname === '/pending'}
+        >
+          Pending trips
+        </NavLink>
+        <NavLink 
+          to="/profile" 
+          active={location.pathname === '/profile'}
+        >
           Profile
-        </Link>
+        </NavLink>
       </nav>
       <div className="flex gap-4 items-center">
         <Link to="/login">
