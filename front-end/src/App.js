@@ -27,7 +27,7 @@ function App() {
       } catch (err) {
         console.error('refresh token expired');
       }
-    }
+    };
 
     if (!token) {
       verifyRefreshToken();
@@ -45,7 +45,7 @@ function App() {
         <Route element={<RequireAuth />}>
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
-            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+            <Route path="/profile" element={<Profile />} />
             {/* Add other protected routes here */}
           </Route>
         </Route>
