@@ -9,7 +9,6 @@ import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
   const location = useLocation();
-  const scrollToUpcoming = useScrollToElement('upcoming-rides');
 
   return (
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">
@@ -24,10 +23,7 @@ const Header = () => {
           to="/" 
           active={location.pathname === '/'}
         >
-          <span onClick={(e) => {
-            e.preventDefault();
-            scrollToUpcoming();
-          }}>All Trips</span>
+          All Trips
         </NavLink>
         <NavLink 
           to="/pending" 
@@ -55,5 +51,4 @@ const Header = () => {
     </header>
   );
 };
-
 export default Header;

@@ -3,3 +3,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Scrollbar Styling */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 12px; /* Slightly wider scrollbar for easier interaction */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Light translucent background for the track */
+    border-radius: 10px; /* Smooth, rounded edges */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(79, 70, 229); /* Matches the button color */
+    border-radius: 10px; /* Smooth, rounded edges */
+    border: 3px solid rgba(0, 0, 0, 0.1); /* Creates padding effect around the thumb */
+  }
+  
+  .custom-scrollbar {
+    scrollbar-color: rgb(79, 70, 229) rgba(0, 0, 0, 0.1); /* Thumb (blue) and track (light background) for Firefox */
+    scrollbar-width: thin; /* Slim scrollbar for Firefox */
+  }
+  

@@ -12,7 +12,6 @@ import Logo from './Logo';
 
 const Sidebar = () => {
   const location = useLocation();
-  const scrollToUpcoming = useScrollToElement('upcoming-rides');
 
   return (
     <aside className="w-20 bg-indigo-100 flex flex-col items-center py-4 fixed h-full">
@@ -31,10 +30,6 @@ const Sidebar = () => {
           icon={faCar} 
           label="All Rides" 
           active={location.pathname === '/'} 
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToUpcoming();
-          }}
         />
         <SidebarItem 
           to="/upcoming" 

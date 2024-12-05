@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import RideCard from './RideCard';
+import SearchForm from './SearchForm';
 
-const UpcomingTrips = () => {
-  const { data: trips, isLoading, isSuccess, isError, error } = useGetTripsQuery();
+const UpcomingRides = () => {
+  const { data: trips, isLoading, isError, error } = useGetTripsQuery();
+  const [searchCriteria, setSearchCriteria] = useState(null);
+
+  const getFilteredTrips = () => {
+    if (!trips?.ids || !searchCriteria) {
+      return trips?.ids?.map(id => trips.entities[id]) || [];
+    }
+
+    return trips.ids
+      .map(id => trips.entities[id])
+      .filter(trip => {
+        const matchOrigin = !searchCriteria.origin || 
+          trip.origin.toLowerCase().includes(searchCriteria.origin.toLowerCase());
+        
+        const matchDestination = !searchCriteria.destination || 
+          trip.destination.toLowerCase().includes(searchCriteria.destination.toLowerCase());
+        
+        const tripStart = new Date(trip.startDate);
+        const searchStart = searchCriteria.startDate ? new Date(searchCriteria.startDate) : null;
+        const searchEnd = searchCriteria.endDate ? new Date(searchCriteria.endDate) : null;
+        
+        const matchStartDate = !searchStart || tripStart >= searchStart;
+        const matchEndDate = !searchEnd || tripStart <= searchEnd;
+
+        return matchOrigin && matchDestination && matchStartDate && matchEndDate;
+      })
+      .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -13,36 +41,37 @@ const UpcomingTrips = () => {
     return <div>Error: {error?.data?.message}</div>;
   }
 
-  if (!trips?.ids?.length) {
-    return <div>No upcoming trips found.</div>;
-  }
-
-  // Sort trips by start date
-  const sortedTrips = trips.ids
-    .map(id => trips.entities[id])
-    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  const filteredTrips = getFilteredTrips();
 
   return (
-    <section id="upcoming-trips" className="px-8 py-12">
-      <div className="grid grid-cols-2 gap-6">
-        {sortedTrips.map(trip => (
-          <RideCard
-            key={trip.id}
-            destination={trip.destination}
-            date={new Date(trip.startDate).toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'long'
-            })}
-            duration={trip.duration}
-            image={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
-            action="Book"
-            origin={trip.origin}
-            price={trip.price}
-          />
-        ))}
+    <section className="space-y-8">
+      <SearchForm onSearch={setSearchCriteria} />
+      
+      <div className="px-8 py-12">
+        {filteredTrips.length === 0 ? (
+          <div className="text-center text-gray-600">No trips found matching your criteria.</div>
+        ) : (
+          <div className="grid grid-cols-2 gap-6">
+            {filteredTrips.map(trip => (
+              <RideCard
+                key={trip.id}
+                destination={trip.destination}
+                date={new Date(trip.startDate).toLocaleDateString('en-US', {
+                  day: 'numeric',
+                  month: 'long'
+                })}
+                duration={trip.duration}
+                image={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
+                action="Book"
+                origin={trip.origin}
+                price={trip.price}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
-export default UpcomingTrips;
+export default UpcomingRides;

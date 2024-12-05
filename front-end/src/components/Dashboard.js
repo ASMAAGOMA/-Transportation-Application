@@ -1,35 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import HeroSection from './HeroSection';
 import TopDestinations from './TopDestinations';
 import UpcomingRides from './UpcomingRides';
+import SearchResults from './SearchResults';
+import SearchForm from './SearchForm';
 
 const Dashboard = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.pathname === '/') {
-      const timeoutId = setTimeout(() => {
-        const element = document.getElementById('upcoming-rides');
-        if (element) {
-          element.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
-        } else {
-          console.warn("Element with id 'upcoming-rides' not found.");
-        }
-      }, 200);
-  
-      return () => clearTimeout(timeoutId);
-    }
-  }, [location]);  
+  const [searchCriteria, setSearchCriteria] = useState(null);
 
   return (
     <div className="dashboard">
-      <HeroSection />
-      <TopDestinations />
-      <UpcomingRides />
+      <HeroSection>
+        <SearchForm onSearch={setSearchCriteria} />
+      </HeroSection>
+      <div className="mt-20">
+        <SearchResults searchCriteria={searchCriteria} />
+      </div>
     </div>
   );
 };
