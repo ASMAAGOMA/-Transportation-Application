@@ -21,3 +21,4 @@
 20241203	06:51:18	e310b21d-6f35-4d50-8075-22706ed12656	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
 20241203	19:32:36	aaf6d1f3-96c7-4c38-ac8c-7f69dcbc8ef9	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
 20241203	19:53:40	aa156d1b-6eca-45a5-bc94-8966c5bf5201	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
+20241205	00:22:53	a1e5af3a-c615-4453-9ed6-fd0b3c0b6b5f	CastError: Cast to ObjectId failed for value ""6750c7b849785092396eeb30"" (type string) at path "_id" for model "Trip"	PATCH	/trips	undefined

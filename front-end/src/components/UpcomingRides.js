@@ -1,39 +1,48 @@
 import React from 'react';
+import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import RideCard from './RideCard';
 
-const UpcomingRides = () => (
-  <section id="upcoming-rides" className="px-8 py-12">
-    <div className="grid grid-cols-2 gap-6">
-      <RideCard 
-        destination="Paris"
-        date="15th November"
-        duration={5}
-        image="/images/up2_enhanced.jpg"
-        action="Change"
-      />
-      <RideCard 
-        destination="New York"
-        date="22nd November"
-        duration={8}
-        image="/images/up1_enhanced.jpg"
-        action="Get Ticket Photo"
-      />
-      <RideCard 
-        destination="Sydney"
-        date="28th November"
-        duration={12}
-        image="/images/up4_enhanced.jpg"
-        action="Change"
-      />
-      <RideCard 
-        destination="Rome"
-        date="5th December"
-        duration={3}
-        image="/images/up3_enhanced.jpg"
-        action="Get Ticket Photo"
-      />
-    </div>
-  </section>
-);
+const UpcomingTrips = () => {
+  const { data: trips, isLoading, isSuccess, isError, error } = useGetTripsQuery();
 
-export default UpcomingRides;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error?.data?.message}</div>;
+  }
+
+  if (!trips?.ids?.length) {
+    return <div>No upcoming trips found.</div>;
+  }
+
+  // Sort trips by start date
+  const sortedTrips = trips.ids
+    .map(id => trips.entities[id])
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  return (
+    <section id="upcoming-trips" className="px-8 py-12">
+      <div className="grid grid-cols-2 gap-6">
+        {sortedTrips.map(trip => (
+          <RideCard
+            key={trip.id}
+            destination={trip.destination}
+            date={new Date(trip.startDate).toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'long'
+            })}
+            duration={trip.duration}
+            image={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
+            action="Book"
+            origin={trip.origin}
+            price={trip.price}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default UpcomingTrips;
