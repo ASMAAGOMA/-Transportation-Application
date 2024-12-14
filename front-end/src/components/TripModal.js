@@ -18,6 +18,12 @@ const TripModal = ({ trip, onClose, onAddToPending, onBook }) => {
       console.error('Failed to add trip to pending:', err);
     }
   };
+  const isUpcoming = () => {
+    if (!trip.date) return false;
+    const tripDate = new Date(trip.date);
+    const now = new Date();
+    return tripDate > now;
+  };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">

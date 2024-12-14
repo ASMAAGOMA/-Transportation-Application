@@ -1,6 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { useState } from 'react';
+import { useAddPendingTripMutation } from '../features/trips/tripsApiSlice'
 import { Calendar, Clock, MapPin, Users, PlusCircle } from 'lucide-react';
 
 const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
@@ -17,6 +18,12 @@ const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
     } catch (err) {
       console.error('Failed to add trip to pending:', err);
     }
+  };
+  const isUpcoming = () => {
+    if (!trip.date) return false;
+    const tripDate = new Date(trip.date);
+    const now = new Date();
+    return tripDate > now;
   };
 
   return (
