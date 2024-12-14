@@ -13,10 +13,14 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
         getPendingTrips: builder.query({
             query: () => '/users/pending-trips',
             transformResponse: responseData => {
-                const loadedTrips = responseData.map(trip => {
-                    trip.id = trip._id;
-                    return trip;
-                });
+                // Add null check and ensure responseData is an array
+                if (!responseData || !Array.isArray(responseData)) {
+                    return tripsAdapter.setAll(initialState, []);
+                }
+                const loadedTrips = responseData.map(trip => ({
+                    ...trip,
+                    id: trip._id || trip.id // Handle both _id and id cases
+                }));
                 return tripsAdapter.setAll(initialState, loadedTrips);
             },
             providesTags: ['PendingTrip']
@@ -41,12 +45,14 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
             validateStatus: (response, result) => {
                 return response.status === 200 && !result.isError
             },
-            keepUnusedDataFor: 200,
             transformResponse: responseData => {
-                const loadedTrips = responseData.map(trip => {
-                    trip.id = trip._id
-                    return trip
-                });
+                if (!responseData || !Array.isArray(responseData)) {
+                    return tripsAdapter.setAll(initialState, []);
+                }
+                const loadedTrips = responseData.map(trip => ({
+                    ...trip,
+                    id: trip._id || trip.id
+                }));
                 return tripsAdapter.setAll(initialState, loadedTrips)
             },
             providesTags: (result, error, arg) => {

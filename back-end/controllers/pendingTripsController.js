@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Trip = require('../models/Trip'); // Add this import
 const asyncHandler = require('express-async-handler');
 
 const getPendingTrips = asyncHandler(async (req, res) => {
@@ -6,7 +7,12 @@ const getPendingTrips = asyncHandler(async (req, res) => {
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user.pendingTrips);
+    // Transform the data to match the expected format
+    const pendingTrips = user.pendingTrips.map(trip => ({
+        ...trip.toObject(),
+        id: trip._id
+    }));
+    res.json(pendingTrips);
 });
 
 const addPendingTrip = asyncHandler(async (req, res) => {
@@ -17,6 +23,12 @@ const addPendingTrip = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
     }
 
+    // Verify the trip exists
+    const trip = await Trip.findById(tripId);
+    if (!trip) {
+        return res.status(404).json({ message: 'Trip not found' });
+    }
+
     if (user.pendingTrips.includes(tripId)) {
         return res.status(400).json({ message: 'Trip already in pending list' });
     }
@@ -24,7 +36,13 @@ const addPendingTrip = asyncHandler(async (req, res) => {
     user.pendingTrips.push(tripId);
     await user.save();
     
-    res.json(user.pendingTrips);
+    // Return the full pending trips list
+    const updatedUser = await User.findById(req.user._id).populate('pendingTrips');
+    const pendingTrips = updatedUser.pendingTrips.map(trip => ({
+        ...trip.toObject(),
+        id: trip._id
+    }));
+    res.json(pendingTrips);
 });
 
 const removePendingTrip = asyncHandler(async (req, res) => {
@@ -43,7 +61,13 @@ const removePendingTrip = asyncHandler(async (req, res) => {
     user.pendingTrips.splice(tripIndex, 1);
     await user.save();
     
-    res.json(user.pendingTrips);
+    // Return the updated pending trips list
+    const updatedUser = await User.findById(req.user._id).populate('pendingTrips');
+    const pendingTrips = updatedUser.pendingTrips.map(trip => ({
+        ...trip.toObject(),
+        id: trip._id
+    }));
+    res.json(pendingTrips);
 });
 
 module.exports = {
