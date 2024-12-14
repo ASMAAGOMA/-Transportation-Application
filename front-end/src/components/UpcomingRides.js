@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import RideCard from './RideCard';
 import SearchForm from './SearchForm';
+import TripModal from './TripModal';
 
 const UpcomingRides = () => {
   const { data: trips, isLoading, isError, error } = useGetTripsQuery();
   const [searchCriteria, setSearchCriteria] = useState(null);
+  const [selectedTrip, setSelectedTrip] = useState(null);
 
   const getFilteredTrips = () => {
     if (!trips?.ids || !searchCriteria) {
@@ -33,12 +35,25 @@ const UpcomingRides = () => {
       .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   };
 
+  const handleTripClick = (trip) => {
+    setSelectedTrip(trip);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTrip(null);
+  };
+
+  const handleBook = (trip) => {
+    // Implement booking logic here
+    console.log('Booking trip:', trip);
+  };
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="p-4">Loading trips...</div>;
   }
 
   if (isError) {
-    return <div>Error: {error?.data?.message}</div>;
+    return <div className="p-4 text-red-500">Error: {error?.data?.message}</div>;
   }
 
   const filteredTrips = getFilteredTrips();
@@ -51,25 +66,26 @@ const UpcomingRides = () => {
         {filteredTrips.length === 0 ? (
           <div className="text-center text-gray-600">No trips found matching your criteria.</div>
         ) : (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTrips.map(trip => (
               <RideCard
                 key={trip.id}
-                destination={trip.destination}
-                date={new Date(trip.startDate).toLocaleDateString('en-US', {
-                  day: 'numeric',
-                  month: 'long'
-                })}
-                duration={trip.duration}
-                image={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
-                action="Book"
-                origin={trip.origin}
-                price={trip.price}
+                trip={trip}
+                onClick={() => handleTripClick(trip)}
+                onBook={handleBook}
               />
             ))}
           </div>
         )}
       </div>
+
+      {selectedTrip && (
+        <TripModal
+          trip={selectedTrip}
+          onClose={handleCloseModal}
+          onBook={handleBook}
+        />
+      )}
     </section>
   );
 };
