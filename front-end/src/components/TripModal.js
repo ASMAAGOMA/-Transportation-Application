@@ -1,7 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
-
+import { useState } from 'react';
+import {}
 const TripModal = ({ trip, onClose, onBook }) => {
   const [addPendingTrip] = useAddPendingTripMutation();
   const [showNotification, setShowNotification] = useState(false);
