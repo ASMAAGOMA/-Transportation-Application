@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const TripCard = ({ trip, onSelect }) => {
+  const [imageError, setImageError] = useState(false);
+
+  // Use placeholder API instead of local image
+  const fallbackImage = "/api/placeholder/400/320";
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <img
-        src={trip.image || '/images/default-trip.jpg'}
-        alt={trip.destination}
-        className="w-full h-48 object-cover"
-        onError={(e) => {
-          e.target.src = '/images/default-trip.jpg';
-          e.target.onerror = null;
-        }}
-      />
+      <div className="relative w-full h-48">
+        <img
+          src={imageError ? fallbackImage : (trip.image || fallbackImage)}
+          alt={trip.destination}
+          className="w-full h-full object-cover"
+          onError={() => setImageError(true)}
+        />
+      </div>
       <div className="p-4">
         <h3 className="text-xl font-medium mb-2">{trip.destination}</h3>
         <p className="text-gray-600 mb-4 line-clamp-2">{trip.description}</p>
