@@ -1,6 +1,8 @@
 import React from 'react';
 import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
 import { useGetPendingTripsQuery } from '../features/trips/tripsApiSlice'
+import { useState } from 'react';
+import { Link, useLocation} from 'react-router-dom';
 import { 
   faCalendarDays, 
   faCar, 
@@ -12,6 +14,7 @@ import Logo from './Logo';
 
 const Sidebar = () => {
   const { data: pendingTrips } = useGetPendingTripsQuery();
+  const location = useLocation();
   const pendingCount = pendingTrips?.ids?.length || 0;
 
   return (

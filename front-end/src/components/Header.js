@@ -1,6 +1,6 @@
 // Header.jsx
 import React from 'react';
-import { Link} from 'react-router-dom';
+import { Link, useLocation} from 'react-router-dom';
 import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
 import { useGetPendingTripsQuery } from '../features/trips/tripsApiSlice'
 import Button from './Button';
@@ -10,6 +10,7 @@ import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
   const { data: pendingTrips } = useGetPendingTripsQuery();
+  const location = useLocation();
   const pendingCount = pendingTrips?.ids?.length || 0;
   return (
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">

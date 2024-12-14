@@ -1,5 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
+import { useState } from 'react';
 import { Calendar, Clock, MapPin, Users, PlusCircle } from 'lucide-react';
 
 const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
