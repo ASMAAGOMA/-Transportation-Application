@@ -1,10 +1,8 @@
-// BookingPage.jsx
 import React, { useState } from 'react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import TripCard from './TripCard';
-import BookingFilters from './BookingFilters';
 import BookingForm from './BookingForm';
-import SearchBar from './SearchBar';
+import FiltersSection from './FiltersSection';
 
 const BookingPage = () => {
   const { data: trips, isLoading } = useGetTripsQuery();
@@ -33,36 +31,40 @@ const BookingPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Book Your Trip</h1>
-        
-        <SearchBar 
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Book Your Trip</h1>
+          <div className="flex space-x-4">
+            <button className="text-gray-600 hover:text-gray-800">Back to Home</button>
+            <button className="text-gray-600 hover:text-gray-800">View Trip Details</button>
+          </div>
+        </div>
+
+        <input
+          type="text"
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search Destination or Trip Name"
-          className="mb-8"
+          className="w-full mb-8 p-3 rounded-lg border border-gray-200"
         />
 
         <div className="grid grid-cols-4 gap-8">
           <div className="col-span-1">
-            <BookingFilters 
-              filters={filters}
-              onChange={setFilters}
-            />
+            <FiltersSection filters={filters} setFilters={setFilters} />
           </div>
 
           <div className="col-span-3">
             {selectedTrip ? (
               <BookingForm 
-                trip={selectedTrip}
-                onBack={() => setSelectedTrip(null)}
+                trip={selectedTrip} 
+                onBack={() => setSelectedTrip(null)} 
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredTrips.map(trip => (
-                  <TripCard
-                    key={trip.id}
-                    trip={trip}
-                    onSelect={() => setSelectedTrip(trip)}
+                  <TripCard 
+                    key={trip.id} 
+                    trip={trip} 
+                    onSelect={() => setSelectedTrip(trip)} 
                   />
                 ))}
               </div>
