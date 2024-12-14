@@ -10,6 +10,32 @@ const initialState = tripsAdapter.getInitialState()
 
 export const tripsApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
+        getPendingTrips: builder.query({
+            query: () => '/pending-trips',
+            transformResponse: responseData => {
+                const loadedTrips = responseData.map(trip => {
+                    trip.id = trip._id;
+                    return trip;
+                });
+                return tripsAdapter.setAll(initialState, loadedTrips);
+            },
+            providesTags: ['PendingTrip']
+        }),
+        addPendingTrip: builder.mutation({
+            query: tripId => ({
+                url: '/pending-trips',
+                method: 'POST',
+                body: { tripId }
+            }),
+            invalidatesTags: ['PendingTrip']
+        }),
+        removePendingTrip: builder.mutation({
+            query: tripId => ({
+                url: `/pending-trips/${tripId}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ['PendingTrip']
+        }),
         getTrips: builder.query({
             query: () => '/trips',
             validateStatus: (response, result) => {
@@ -64,6 +90,9 @@ export const {
     useAddNewTripMutation,
     useUpdateTripMutation,
     useDeleteTripMutation,
+    useGetPendingTripsQuery,
+    useAddPendingTripMutation,
+    useRemovePendingTripMutation
 } = tripsApiSlice
 
 // returns the query result object

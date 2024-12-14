@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const NavLink = ({ to, children, active }) => (
+const NavLink = ({ to, children, active, badge }) => (
   <Link 
     to={to}
     className={`relative group ${
@@ -9,6 +9,11 @@ const NavLink = ({ to, children, active }) => (
     } hover:text-indigo-600 transition-colors duration-200`}
   >
     {children}
+    {badge && (
+      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        {badge}
+      </span>
+    )}
     <span 
       className={`absolute bottom-0 left-1/2 h-0.5 bg-indigo-600 transition-all duration-300 -translate-x-1/2 ${
         active ? 'w-full' : 'w-0 group-hover:w-full'

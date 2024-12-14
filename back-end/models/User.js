@@ -25,7 +25,11 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now  // Set the creation date to now by default
-    }
+    },
+    pendingTrips: [{ 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Trip' 
+    }]
 });
 
 module.exports = mongoose.model('User', userSchema);

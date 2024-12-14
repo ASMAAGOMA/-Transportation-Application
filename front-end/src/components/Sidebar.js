@@ -11,7 +11,8 @@ import SidebarItem from './SidebarItem';
 import Logo from './Logo';
 
 const Sidebar = () => {
-  const location = useLocation();
+  const { data: pendingTrips } = useGetPendingTripsQuery();
+  const pendingCount = pendingTrips?.ids?.length || 0;
 
   return (
     <aside className="w-20 bg-indigo-100 flex flex-col items-center py-4 fixed h-full">
@@ -19,6 +20,13 @@ const Sidebar = () => {
         <Logo image="/images/file.png" altText="Custom Logo" />
       </div>
       <nav className="flex flex-col gap-4">
+      <SidebarItem 
+        to="/pending" 
+        icon={faClock} 
+        label="Pending"
+        badge={pendingCount > 0 ? pendingCount : undefined}
+        active={location.pathname === '/pending'} 
+      />
         <SidebarItem 
           to="/booking" 
           icon={faCalendarDays} 

@@ -8,11 +8,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
-  const location = useLocation();
-
+  const { data: pendingTrips } = useGetPendingTripsQuery();
+  const pendingCount = pendingTrips?.ids?.length || 0;
   return (
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">
       <nav className="flex gap-6">
+      <NavLink 
+          to="/pending" 
+          active={location.pathname === '/pending'}
+          badge={pendingCount > 0 ? pendingCount : undefined}
+        >
+          Pending trips
+        </NavLink>
         <NavLink 
           to="/booking" 
           active={location.pathname === '/booking'}
