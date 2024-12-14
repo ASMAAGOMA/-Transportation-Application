@@ -13,17 +13,37 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
         getPendingTrips: builder.query({
             query: () => '/users/pending-trips',
             transformResponse: responseData => {
-                // Add null check and ensure responseData is an array
-                if (!responseData || !Array.isArray(responseData)) {
+                // Better error handling
+                if (!responseData) {
+                    console.error('No response data received');
                     return tripsAdapter.setAll(initialState, []);
                 }
-                const loadedTrips = responseData.map(trip => ({
-                    ...trip,
-                    id: trip._id || trip.id // Handle both _id and id cases
-                }));
+                
+                // Handle both array and object responses
+                const trips = Array.isArray(responseData) ? responseData : [responseData];
+                
+                // More robust data transformation
+                const loadedTrips = trips.map(trip => {
+                    if (!trip) return null;
+                    return {
+                        ...trip,
+                        id: trip._id || trip.id,
+                        // Add any required default values here
+                        title: trip.title || 'Untitled Trip',
+                        // Add other necessary fields with defaults
+                    };
+                }).filter(trip => trip !== null); // Remove any null entries
+                
                 return tripsAdapter.setAll(initialState, loadedTrips);
             },
-            providesTags: ['PendingTrip']
+            providesTags: (result) => {
+                if (result?.ids) {
+                    return [
+                        { type: 'PendingTrip', id: 'LIST' },
+                        ...result.ids.map(id => ({ type: 'PendingTrip', id }))
+                    ]
+                } else return [{ type: 'PendingTrip', id: 'LIST' }]
+            }
         }),
         addPendingTrip: builder.mutation({
             query: tripId => ({
