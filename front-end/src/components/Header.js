@@ -35,12 +35,6 @@ const Header = () => {
           All Trips
         </NavLink>
         <NavLink 
-          to="/pending" 
-          active={location.pathname === '/pending'}
-        >
-          Pending trips
-        </NavLink>
-        <NavLink 
           to="/profile" 
           active={location.pathname === '/profile'}
         >

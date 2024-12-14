@@ -3,8 +3,19 @@ import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 
 const TripModal = ({ trip, onClose, onBook }) => {
-  // Early return if trip is null or undefined
-  if (!trip) return null;
+  const [addPendingTrip] = useAddPendingTripMutation();
+  const [showNotification, setShowNotification] = useState(false);
+
+  const handleAddToPending = async (e) => {
+    e.stopPropagation();
+    try {
+      await addPendingTrip(trip.id).unwrap();
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+    } catch (err) {
+      console.error('Failed to add trip to pending:', err);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
@@ -19,11 +30,11 @@ const TripModal = ({ trip, onClose, onBook }) => {
           </button>
         </div>
         <div className="space-y-4">
-          <img
-            src={trip.image || '/images/default-trip.jpg'}
-            alt={trip.destination}
-            className="w-full h-64 object-cover rounded-lg"
-          />
+        <img
+          src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
+          alt={trip.destination}
+          className="w-full h-64 object-cover rounded-lg"
+        />
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-indigo-600" />
@@ -74,6 +85,12 @@ const TripModal = ({ trip, onClose, onBook }) => {
           </div>
         </div>
         <div className="flex gap-4 mt-4">
+        <button
+          onClick={handleAddToPending}
+          className="flex-1 bg-white border border-indigo-600 text-indigo-600 py-2 rounded-lg hover:bg-indigo-50 transition-colors"
+          >
+          Add to Pending
+        </button>
           <button
             onClick={() => onBook(trip)}
             className="flex-1 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
