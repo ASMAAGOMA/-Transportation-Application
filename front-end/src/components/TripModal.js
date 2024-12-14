@@ -1,26 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
-import { useState } from 'react';
 import { useAddPendingTripMutation } from '../features/trips/tripsApiSlice';
 
 const TripModal = ({ trip, onClose, onBook }) => {
   const [addPendingTrip] = useAddPendingTripMutation();
-  const [showNotification, setShowNotification] = useState(false);
+  const [notification, setNotification] = useState({ visible: false, message: '', type: '' });
 
-  // Check if trip is null or undefined and provide a fallback
   if (!trip) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
         <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
           <div className="flex justify-between items-start mb-4">
             <h2 className="text-2xl font-bold">Trip Not Found</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ×
-            </button>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">×</button>
           </div>
           <p className="text-gray-600">The trip details could not be loaded. Please try again later.</p>
         </div>
@@ -32,10 +25,12 @@ const TripModal = ({ trip, onClose, onBook }) => {
     e.stopPropagation();
     try {
       await addPendingTrip(trip.id).unwrap();
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000);
+      setNotification({ visible: true, message: 'Trip added to pending successfully!', type: 'success' });
     } catch (err) {
-      console.error('Failed to add trip to pending:', err);
+      setNotification({ visible: true, message: 'Failed to add trip to pending.', type: 'error' });
+      console.error('Error adding trip to pending:', err);
+    } finally {
+      setTimeout(() => setNotification({ visible: false, message: '', type: '' }), 3000);
     }
   };
 
@@ -44,12 +39,7 @@ const TripModal = ({ trip, onClose, onBook }) => {
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold">{trip.destination || 'Unknown Destination'}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ×
-          </button>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">×</button>
         </div>
         <div className="space-y-4">
           <img
@@ -120,6 +110,11 @@ const TripModal = ({ trip, onClose, onBook }) => {
             Book Now
           </button>
         </div>
+        {notification.visible && (
+          <div className={`mt-4 p-3 rounded-lg ${notification.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            {notification.message}
+          </div>
+        )}
       </div>
     </div>
   );
