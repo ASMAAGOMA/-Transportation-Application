@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Login from './features/auth/Login';
 import SignUp from './features/auth/Register';
 import Dashboard from './components/Dashboard';
+import BookingPage from './components/BookingPage'
 import Profile from './components/Profile';
 import RequireAuth from './components/RequireAuth';
 import PersistLogin from './features/auth/PersistLogin';
@@ -39,6 +40,7 @@ function App() {
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/booking" element={<BookingPage />} />
       
       {/* Protected routes */}
       <Route element={<PersistLogin />}>
