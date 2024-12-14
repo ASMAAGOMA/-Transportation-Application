@@ -2,7 +2,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 import { useState } from 'react';
-import {}
+import {useAddPendingTripMutation} from '../features/trips/tripsApiSlice'
 const TripModal = ({ trip, onClose, onBook }) => {
   const [addPendingTrip] = useAddPendingTripMutation();
   const [showNotification, setShowNotification] = useState(false);
