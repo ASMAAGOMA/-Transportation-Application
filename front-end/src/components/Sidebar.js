@@ -1,6 +1,6 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
+import { useGetPendingTripsQuery } from '../features/trips/tripsApiSlice'
 import { 
   faCalendarDays, 
   faCar, 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { format } from 'date-fns';
+import { useAddPendingTripMutation } from '../features/trips/tripsApiSlice'
 import { Calendar, Clock, MapPin, Users, PlusCircle } from 'lucide-react';
 
 const TripModal = ({ trip, onClose, onAddToPending, onBook }) => {

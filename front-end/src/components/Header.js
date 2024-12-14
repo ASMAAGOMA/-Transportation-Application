@@ -1,7 +1,8 @@
 // Header.jsx
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
+import { useGetPendingTripsQuery } from '../features/trips/tripsApiSlice'
 import Button from './Button';
 import NavLink from './NavLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
