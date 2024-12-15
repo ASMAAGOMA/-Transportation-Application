@@ -4,22 +4,14 @@ const asyncHandler = require('express-async-handler');
 
 const getPendingTrips = asyncHandler(async (req, res) => {
     try {
-        // Add explicit check for req.user
-        if (!req.user || !req.user._id) {
-            console.error('No user found in request');
-            return res.status(401).json({ message: 'User not authenticated' });
-        }
-
-        console.log('Getting pending trips for user:', req.user._id);
-
-        // First, verify the user exists
+        // Verify the user exists
         const userExists = await User.findById(req.user._id);
         if (!userExists) {
             console.error('User not found in database:', req.user._id);
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Populate pending trips
+        // Populate pending trips with error handling
         const populatedUser = await User.findById(req.user._id)
             .populate({
                 path: 'pendingTrips',
@@ -55,7 +47,6 @@ const getPendingTrips = asyncHandler(async (req, res) => {
         });
     }
 });
-
 // Schema validation middleware
 const validateTrip = (req, res, next) => {
     const { tripId } = req.body;

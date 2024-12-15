@@ -14,23 +14,17 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
             query: () => '/users/pending-trips',
             transformResponse: responseData => {
                 // More robust error handling
-                if (!responseData) {
-                    console.error('No response data received');
+                if (!responseData || !Array.isArray(responseData)) {
+                    console.error('Invalid or empty response data');
                     return tripsAdapter.setAll(initialState, []);
                 }
                 
-                // Handle both array and object responses
-                const trips = Array.isArray(responseData) ? responseData : [responseData];
-                
-                const loadedTrips = trips.map(trip => {
-                    if (!trip) return null;
-                    return {
-                        ...trip,
-                        id: trip._id || trip.id,
-                        destination: trip.destination || 'Unknown Destination',
-                        // Add other fallback values
-                    };
-                }).filter(trip => trip !== null);
+                const loadedTrips = responseData.map(trip => ({
+                    ...trip,
+                    id: trip._id || trip.id,
+                    destination: trip.destination || 'Unknown Destination',
+                    // Add other fallback values
+                }));
                 
                 return tripsAdapter.setAll(initialState, loadedTrips);
             },

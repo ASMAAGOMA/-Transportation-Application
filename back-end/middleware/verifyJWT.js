@@ -1,5 +1,3 @@
-const jwt = require('jsonwebtoken');
-
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
 
@@ -24,7 +22,8 @@ const verifyJWT = (req, res, next) => {
             email: decoded.UserInfo.email,
             roles: decoded.UserInfo.roles
         };
+        
+        // Important: Call next() to pass control to the next middleware/route handler
+        next();
     });
 };
-
-module.exports = verifyJWT;
