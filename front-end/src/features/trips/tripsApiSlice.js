@@ -51,6 +51,11 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: { tripId }
             }),
+            transformErrorResponse: (response, meta, arg) => {
+                // Log the full error for debugging
+                console.error('Add Pending Trip Error:', response);
+                return response;
+            },
             invalidatesTags: ['PendingTrip']
         }),
         removePendingTrip: builder.mutation({
