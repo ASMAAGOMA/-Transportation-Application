@@ -74,7 +74,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: { tripId }
             }),
-            invalidatesTags: ['PendingTrips']
+            invalidatesTags: ['PendingTrips', 'User']
         }),
         removePendingTrip: builder.mutation({
             query: (tripId) => ({
