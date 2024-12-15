@@ -1,5 +1,11 @@
-const User = require('../models/User')
-const Trip = require('../models/Trip')
+const mongoose = require('mongoose');
+const User = require('../models/User');
+const Trip = require('../models/Trip');
+
+// Add this validation helper
+const isValidObjectId = (id) => {
+    return mongoose.Types.ObjectId.isValid(id);
+};
 
 const getPendingTrips = async (req, res) => {
     try {
@@ -31,8 +37,14 @@ const addPendingTrip = async (req, res) => {
 
         const { tripId } = req.body;
         
+        // Validate tripId
         if (!tripId) {
             return res.status(400).json({ message: 'Trip ID is required' });
+        }
+
+        // Add MongoDB ObjectId validation
+        if (!isValidObjectId(tripId)) {
+            return res.status(400).json({ message: 'Invalid Trip ID format' });
         }
 
         const user = await User.findById(req.user);
@@ -78,6 +90,11 @@ const removePendingTrip = async (req, res) => {
         const tripId = req.params.tripId;
         if (!tripId) {
             return res.status(400).json({ message: 'Trip ID is required' });
+        }
+
+        // Add MongoDB ObjectId validation
+        if (!isValidObjectId(tripId)) {
+            return res.status(400).json({ message: 'Invalid Trip ID format' });
         }
 
         const tripIndex = user.pendingTrips.indexOf(tripId);
