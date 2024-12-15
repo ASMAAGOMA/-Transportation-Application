@@ -4,23 +4,22 @@ const asyncHandler = require('express-async-handler');
 
 const getPendingTrips = asyncHandler(async (req, res) => {
     try {
-        // Debug log for incoming request
+        // Add explicit check for req.user
+        if (!req.user || !req.user._id) {
+            console.error('No user found in request');
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
         console.log('Getting pending trips for user:', req.user._id);
 
-        // First, verify the user exists without population
+        // First, verify the user exists
         const userExists = await User.findById(req.user._id);
         if (!userExists) {
-            console.error('User not found:', req.user._id);
+            console.error('User not found in database:', req.user._id);
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Debug log user data
-        console.log('User found:', {
-            id: userExists._id,
-            pendingTripsCount: userExists.pendingTrips?.length || 0
-        });
-
-        // Attempt to populate pending trips with error handling
+        // Populate pending trips
         const populatedUser = await User.findById(req.user._id)
             .populate({
                 path: 'pendingTrips',
@@ -30,21 +29,18 @@ const getPendingTrips = asyncHandler(async (req, res) => {
             .lean() // Convert to plain JavaScript object
             .exec();
 
-        if (!populatedUser.pendingTrips) {
-            console.log('No pending trips array found, initializing empty array');
-            populatedUser.pendingTrips = [];
-        }
-
-        // Transform the trips data
-        const pendingTrips = populatedUser.pendingTrips.map(trip => ({
+        // Ensure pendingTrips exists and is an array
+        const pendingTrips = (populatedUser.pendingTrips || []).map(trip => ({
             id: trip._id.toString(),
-            title: trip.title || 'Untitled Trip',
-            description: trip.description || '',
-            date: trip.date || null,
-            // Add any other fields you need
+            destination: trip.destination,
+            origin: trip.origin,
+            startDate: trip.startDate,
+            endDate: trip.endDate,
+            price: trip.price,
+            image: trip.image,
+            // Add other fields as needed
         }));
 
-        console.log(`Successfully retrieved ${pendingTrips.length} pending trips`);
         return res.json(pendingTrips);
 
     } catch (error) {

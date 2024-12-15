@@ -13,7 +13,7 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
         getPendingTrips: builder.query({
             query: () => '/users/pending-trips',
             transformResponse: responseData => {
-                // Better error handling
+                // More robust error handling
                 if (!responseData) {
                     console.error('No response data received');
                     return tripsAdapter.setAll(initialState, []);
@@ -22,28 +22,23 @@ export const tripsApiSlice = apiSlice.injectEndpoints({
                 // Handle both array and object responses
                 const trips = Array.isArray(responseData) ? responseData : [responseData];
                 
-                // More robust data transformation
                 const loadedTrips = trips.map(trip => {
                     if (!trip) return null;
                     return {
                         ...trip,
                         id: trip._id || trip.id,
-                        // Add any required default values here
-                        title: trip.title || 'Untitled Trip',
-                        // Add other necessary fields with defaults
+                        destination: trip.destination || 'Unknown Destination',
+                        // Add other fallback values
                     };
-                }).filter(trip => trip !== null); // Remove any null entries
+                }).filter(trip => trip !== null);
                 
                 return tripsAdapter.setAll(initialState, loadedTrips);
             },
-            providesTags: (result) => {
-                if (result?.ids) {
-                    return [
-                        { type: 'PendingTrip', id: 'LIST' },
-                        ...result.ids.map(id => ({ type: 'PendingTrip', id }))
-                    ]
-                } else return [{ type: 'PendingTrip', id: 'LIST' }]
-            }
+            transformErrorResponse: (response, meta, arg) => {
+                console.error('Get Pending Trips Error:', response);
+                return response;
+            },
+            providesTags: ['PendingTrip']
         }),
         addPendingTrip: builder.mutation({
             query: tripId => ({
