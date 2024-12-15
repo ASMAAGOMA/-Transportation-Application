@@ -10,63 +10,17 @@ const initialState = tripsAdapter.getInitialState()
 
 export const tripsApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        getPendingTrips: builder.query({
-            query: () => '/users/pending-trips',
-            transformResponse: responseData => {
-                // More robust error handling
-                if (!responseData || !Array.isArray(responseData)) {
-                    console.error('Invalid or empty response data');
-                    return tripsAdapter.setAll(initialState, []);
-                }
-                
-                const loadedTrips = responseData.map(trip => ({
-                    ...trip,
-                    id: trip._id || trip.id,
-                    destination: trip.destination || 'Unknown Destination',
-                    // Add other fallback values
-                }));
-                
-                return tripsAdapter.setAll(initialState, loadedTrips);
-            },
-            transformErrorResponse: (response, meta, arg) => {
-                console.error('Get Pending Trips Error:', response);
-                return response;
-            },
-            providesTags: ['PendingTrip']
-        }),
-        addPendingTrip: builder.mutation({
-            query: tripId => ({
-                url: '/users/pending-trips',
-                method: 'POST',
-                body: { tripId }
-            }),
-            transformErrorResponse: (response, meta, arg) => {
-                // Log the full error for debugging
-                console.error('Add Pending Trip Error:', response);
-                return response;
-            },
-            invalidatesTags: ['PendingTrip']
-        }),
-        removePendingTrip: builder.mutation({
-            query: tripId => ({
-                url: `/users/pending-trips/${tripId}`,
-                method: 'DELETE'
-            }),
-            invalidatesTags: ['PendingTrip']
-        }),
         getTrips: builder.query({
             query: () => '/trips',
             validateStatus: (response, result) => {
                 return response.status === 200 && !result.isError
             },
+            keepUnusedDataFor: 200,
             transformResponse: responseData => {
-                if (!responseData || !Array.isArray(responseData)) {
-                    return tripsAdapter.setAll(initialState, []);
-                }
-                const loadedTrips = responseData.map(trip => ({
-                    ...trip,
-                    id: trip._id || trip.id
-                }));
+                const loadedTrips = responseData.map(trip => {
+                    trip.id = trip._id
+                    return trip
+                });
                 return tripsAdapter.setAll(initialState, loadedTrips)
             },
             providesTags: (result, error, arg) => {
@@ -110,9 +64,6 @@ export const {
     useAddNewTripMutation,
     useUpdateTripMutation,
     useDeleteTripMutation,
-    useGetPendingTripsQuery,
-    useAddPendingTripMutation,
-    useRemovePendingTripMutation
 } = tripsApiSlice
 
 // returns the query result object

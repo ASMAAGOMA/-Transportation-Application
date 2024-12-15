@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
 
@@ -17,13 +19,11 @@ const verifyJWT = (req, res, next) => {
         // Log the decoded payload to verify its structure
         console.log('Decoded payload:', decoded);
         
-        req.user = {
-            _id: decoded.UserInfo.id,
-            email: decoded.UserInfo.email,
-            roles: decoded.UserInfo.roles
-        };
-        
-        // Important: Call next() to pass control to the next middleware/route handler
+        // Ensure `decoded.UserInfo` and `decoded.UserInfo.id` are correct
+        req.user = decoded.UserInfo.id;
+        req.roles = decoded.UserInfo.roles;
         next();
     });
 };
+
+module.exports = verifyJWT;

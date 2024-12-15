@@ -8,7 +8,6 @@ import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
 import RequireAuth from './components/RequireAuth';
 import PersistLogin from './features/auth/PersistLogin';
-import PendingTrips from './components/PendingTrips'
 import { selectCurrentToken } from './features/auth/authSlice';
 import { useRefreshMutation } from './features/auth/authApiSlice';
 
@@ -47,7 +46,6 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/pending" element={<PendingTrips />} />
             {/* Add other protected routes here */}
           </Route>
         </Route>

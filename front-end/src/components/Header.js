@@ -1,27 +1,18 @@
 // Header.jsx
 import React from 'react';
-import { Link, useLocation} from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
-import { useGetPendingTripsQuery } from '../features/trips/tripsApiSlice'
 import Button from './Button';
 import NavLink from './NavLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faGear } from '@fortawesome/free-solid-svg-icons';
 
 const Header = () => {
-  const { data: pendingTrips } = useGetPendingTripsQuery();
   const location = useLocation();
-  const pendingCount = pendingTrips?.ids?.length || 0;
+
   return (
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">
       <nav className="flex gap-6">
-      <NavLink 
-          to="/pending" 
-          active={location.pathname === '/pending'}
-          badge={pendingCount > 0 ? pendingCount : undefined}
-        >
-          Pending trips
-        </NavLink>
         <NavLink 
           to="/booking" 
           active={location.pathname === '/booking'}
@@ -33,6 +24,12 @@ const Header = () => {
           active={location.pathname === '/'}
         >
           All Trips
+        </NavLink>
+        <NavLink 
+          to="/pending" 
+          active={location.pathname === '/pending'}
+        >
+          Pending trips
         </NavLink>
         <NavLink 
           to="/profile" 
