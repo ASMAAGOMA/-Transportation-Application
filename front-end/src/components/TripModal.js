@@ -24,17 +24,13 @@ const TripModal = ({ trip, onClose, onBook }) => {
   const handleAddToPending = async (e) => {
     e.stopPropagation();
     try {
-      // Ensure you're passing the correct ID
-      const correctId = trip._id || trip.id;
-      await addPendingTrip(correctId).unwrap();
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000);
-      if (onAddToPending) onAddToPending(trip);
+      await addPendingTrip(trip.id).unwrap();
+      setNotification({ visible: true, message: 'Trip added to pending successfully!', type: 'success' });
     } catch (err) {
-      console.error('Failed to add trip to pending:', err);
-      // Optionally show an error notification
-      setShowNotification(true);
-      setNotificationMessage(err.data?.message || 'Failed to add trip');
+      setNotification({ visible: true, message: 'Failed to add trip to pending.', type: 'error' });
+      console.error('Error adding trip to pending:', err);
+    } finally {
+      setTimeout(() => setNotification({ visible: false, message: '', type: '' }), 3000);
     }
   };
 

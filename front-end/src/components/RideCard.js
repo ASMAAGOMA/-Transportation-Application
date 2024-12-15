@@ -11,17 +11,12 @@ const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
   const handleAddToPending = async (e) => {
     e.stopPropagation();
     try {
-      // Ensure you're passing the correct ID
-      const correctId = trip._id || trip.id;
-      await addPendingTrip(correctId).unwrap();
+      await addPendingTrip(trip.id).unwrap();
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 3000);
       if (onAddToPending) onAddToPending(trip);
     } catch (err) {
       console.error('Failed to add trip to pending:', err);
-      // Optionally show an error notification
-      setShowNotification(true);
-      setNotificationMessage(err.data?.message || 'Failed to add trip');
     }
   };
   const isUpcoming = () => {
