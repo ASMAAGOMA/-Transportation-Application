@@ -11,8 +11,8 @@ const RideCard = ({ trip, onClick, isPending, showRemoveButton }) => {
     const [removePending] = useRemovePendingTripMutation();
 
     const isPendingTrip = useMemo(() => 
-        user?.pendingTrips?.includes(trip.id),
-        [user, trip.id]
+        user?.pendingTrips?.includes(trip._id), // Updated to use _id
+        [user, trip._id]
     );
 
     const handlePendingClick = async (e) => {
@@ -25,18 +25,18 @@ const RideCard = ({ trip, onClick, isPending, showRemoveButton }) => {
     
         try {
             if (isPendingTrip) {
-                const result = await removePending(trip.id).unwrap();
+                const result = await removePending(trip._id).unwrap(); // Updated to use _id
                 console.log("Remove result:", result);
             } else {
-                const result = await addPending(trip.id).unwrap();
+                const result = await addPending({ tripId: trip._id }).unwrap(); // Updated to pass object with tripId
                 console.log("Add result:", result);
             }
             
             // Update the user's pending trips in the Redux store
             if (user && user.pendingTrips) {
                 const updatedPendingTrips = isPendingTrip
-                    ? user.pendingTrips.filter(id => id !== trip.id)
-                    : [...user.pendingTrips, trip.id];
+                    ? user.pendingTrips.filter(id => id !== trip._id)
+                    : [...user.pendingTrips, trip._id];
                 dispatch(updateUserPendingTrips(updatedPendingTrips));
             }
         } catch (err) {
