@@ -65,12 +65,12 @@ export const authApiSlice = apiSlice.injectEndpoints({
             providesTags: ['User']
         }),
         getPendingTrips: builder.query({
-            query: () => `/users/pending`,
+            query: () => `/users/pending-trips`, // Updated endpoint
             providesTags: ['PendingTrips']
         }),
         addPendingTrip: builder.mutation({
             query: (tripId) => ({
-                url: `/users/pending`,
+                url: `/users/pending-trips`, // Updated endpoint
                 method: 'POST',
                 body: { tripId }
             }),
@@ -78,7 +78,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }),
         removePendingTrip: builder.mutation({
             query: (tripId) => ({
-                url: `/users/pending/${tripId}`,
+                url: `/users/pending-trips/${tripId}`, // Updated endpoint
                 method: 'DELETE',
             }),
             invalidatesTags: ['PendingTrips']
