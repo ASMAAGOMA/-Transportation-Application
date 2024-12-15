@@ -1,71 +1,98 @@
-import React from 'react';
-import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, Users, PlusCircle } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectCurrentUser, updateUserPendingTrips } from '../features/auth/authSlice';
+import { useAddPendingTripMutation, useRemovePendingTripMutation } from '../features/auth/authApiSlice';
 
-const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
-  const isUpcoming = new Date(trip.startDate) > new Date();
+const RideCard = ({ trip, onClick, isPending, showRemoveButton }) => {
+    const user = useSelector(selectCurrentUser);
+    const dispatch = useDispatch();
+    
+    const [addPending] = useAddPendingTripMutation();
+    const [removePending] = useRemovePendingTripMutation();
 
-  return (
-    <div 
-      className="relative bg-white rounded-lg shadow-md overflow-hidden group"
-    >
-      <div onClick={onClick} className="cursor-pointer">
-        <img 
-          src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
-          alt={trip.destination}
-          className="w-full h-48 object-cover"
-        />
+    const isPendingTrip = useMemo(() => 
+        user?.pendingTrips?.includes(trip.id),
+        [user, trip.id]
+    );
+
+    const handlePendingClick = async (e) => {
+        e.stopPropagation();
         
-        {isUpcoming && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddToPending(trip);
-            }}
-            className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100"
-            title="Add to pending trips"
-          >
-            <PlusCircle className="w-6 h-6 text-indigo-600" />
-          </button>
-        )}
+        if (!user) {
+            alert("You must be logged in to add trips to pending.");
+            return;
+        }
+    
+        try {
+            if (isPendingTrip) {
+                const result = await removePending(trip.id).unwrap();
+                console.log("Remove result:", result);
+            } else {
+                const result = await addPending(trip.id).unwrap();
+                console.log("Add result:", result);
+            }
+            
+            // Update the user's pending trips in the Redux store
+            if (user && user.pendingTrips) {
+                const updatedPendingTrips = isPendingTrip
+                    ? user.pendingTrips.filter(id => id !== trip.id)
+                    : [...user.pendingTrips, trip.id];
+                dispatch(updateUserPendingTrips(updatedPendingTrips));
+            }
+        } catch (err) {
+            console.error('Failed to update pending trip:', err);
+            alert('Failed to update pending trip. Please try again.');
+        }
+    };
 
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="text-lg font-semibold">{trip.destination}</h3>
-            <span className="text-lg font-bold text-indigo-600">${trip.price}</span>
-          </div>
+    const formattedDate = new Date(trip.startDate).toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'long'
+    });
 
-          <div className="space-y-2 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span>{trip.origin}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>{format(new Date(trip.startDate), 'PPP')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>{trip.duration} hours</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Book button section */}
-      <div className="p-4 pt-0">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onBook(trip);
-          }}
-          className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+    return (
+        <div 
+            className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => onClick && onClick(trip)}
         >
-          Book Now
-        </button>
-      </div>
-    </div>
-  );
+            <div className="relative">
+                <img 
+                    src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
+                    alt={`${trip.origin} to ${trip.destination}`}
+                    className="w-full h-48 object-cover"
+                />
+                <button 
+                    className={`absolute top-4 right-4 p-2 rounded-full 
+                        ${isPendingTrip ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+                    onClick={handlePendingClick}
+                >
+                    {isPendingTrip ? 'Pending' : 'Add to Pending'}
+                </button>
+            </div>
+            
+            <div className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-semibold">{trip.destination}</h3>
+                    <span className="text-gray-600">${trip.price}</span>
+                </div>
+                
+                <div className="text-gray-600 mb-2">
+                    <p>From: {trip.origin}</p>
+                    <p>Date: {formattedDate}</p>
+                    <p>Duration: {trip.duration} days</p>
+                </div>
+
+                {showRemoveButton && isPending && (
+                    <button
+                        onClick={handlePendingClick}
+                        className="mt-2 w-full py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                    >
+                        Remove from Pending
+                    </button>
+                )}
+            </div>
+        </div>
+    );
 };
 
-export default RideCard
+export default RideCard;

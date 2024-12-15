@@ -3,29 +3,33 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true  // Username is still required
+        required: true
     },
     email: {
         type: String,
-        required: true,  // Email is required
-        unique: true  // Ensure email uniqueness
+        required: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true  // Password is still required
+        required: true
     },
     roles: [{
         type: String,
-        default: "User"  // Default to "User" if not provided
+        default: "User"
     }],
     active: {
         type: Boolean,
-        default: true  // Default to true if not provided
+        default: true
     },
     createdAt: {
         type: Date,
-        default: Date.now  // Set the creation date to now by default
-    }
+        default: Date.now
+    },
+    pendingTrips: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Trip'  // Reference to the Trip model
+    }]
 });
 
 module.exports = mongoose.model('User', userSchema);
