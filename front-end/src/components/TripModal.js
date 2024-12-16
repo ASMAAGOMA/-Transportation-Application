@@ -13,18 +13,18 @@ const TripModal = ({ trip, onClose, onBook }) => {
   const [addPending] = useAddPendingTripMutation();
   const [removePending] = useRemovePendingTripMutation();
 
+  // Ensure useMemo is always called
+  const isPendingTrip = useMemo(() => {
+    if (!trip) return false; // Handle the case where trip is null
+    return user?.pendingTrips?.includes(trip._id);
+  }, [user, trip]);
+
   if (!trip) return null;
 
   const isUpcoming = new Date(trip.startDate) > new Date();
 
-  const isPendingTrip = useMemo(() => 
-    user?.pendingTrips?.includes(trip._id), 
-    [user, trip._id]
-  );
-
   const handlePendingClick = async (e) => {
     e.stopPropagation();
-    
     if (!user) {
       alert("You must be logged in to add trips to pending.");
       return;
