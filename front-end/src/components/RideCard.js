@@ -16,41 +16,48 @@ const RideCard = ({ trip, onClick, isPending, showRemoveButton }) => {
     );
 
     const handlePendingClick = async (e) => {
-      e.stopPropagation();
-      
-      if (!user) {
-          alert("You must be logged in to add trips to pending.");
-          return;
-      }
-  
-      try {
-          let result;
-          if (isPendingTrip) {
-              result = await removePending(trip._id).unwrap();
-          } else {
-              console.log('Adding trip with ID:', trip._id); // Add this log
-              result = await addPending(trip._id).unwrap();
-          }
-          
-          console.log('Mutation result:', result); // Add this log
-          
-          // Update the user's pending trips in the Redux store
-          if (user && user.pendingTrips) {
-              const updatedPendingTrips = isPendingTrip
-                  ? user.pendingTrips.filter(id => id !== trip._id)
-                  : [...user.pendingTrips, trip._id];
-              dispatch(updateUserPendingTrips(updatedPendingTrips));
-          }
-      } catch (err) {
-          console.error('Failed to update pending trip:', err);
-          console.error('Error details:', {
-              status: err.status,
-              data: err.data,
-              message: err.message
-          });
-          alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
-      }
-  };
+        e.stopPropagation();
+        
+        if (!user) {
+            alert("You must be logged in to add trips to pending.");
+            return;
+        }
+    
+        try {
+            let result;
+            if (isPendingTrip) {
+                result = await removePending(trip._id).unwrap();
+            } else {
+                result = await addPending(trip._id).unwrap();
+            }
+            
+            // Update the user's pending trips in the Redux store
+            if (user && user.pendingTrips) {
+                const updatedPendingTrips = isPendingTrip
+                    ? user.pendingTrips.filter(id => id !== trip._id)
+                    : [...user.pendingTrips, trip._id];
+                dispatch(updateUserPendingTrips(updatedPendingTrips));
+            }
+        } catch (err) {
+            // Add more detailed error handling
+            console.error('Failed to update pending trip:', err);
+            console.error('Error details:', {
+                status: err.status,
+                data: err.data,
+                message: err.data?.message || 'Unknown error'
+            });
+    
+            // If the error is specifically about the trip already being in pending trips, 
+            // you might want to just ignore it or show a different message
+            if (err.status === 400 && err.data?.message === 'Trip already in pending trips') {
+                // Optionally, you could just return without showing an error
+                return;
+            }
+    
+            // Show a generic error message
+            alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
+        }
+    };
 
     const formattedDate = new Date(trip.startDate).toLocaleDateString('en-US', {
         day: 'numeric',

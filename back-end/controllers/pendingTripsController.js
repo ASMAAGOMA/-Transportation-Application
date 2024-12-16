@@ -59,7 +59,7 @@ const addPendingTrip = async (req, res) => {
 
         // Check if trip is already in pending trips
         if (user.pendingTrips && user.pendingTrips.includes(tripId)) {
-            return res.status(400).json({ message: 'Trip already in pending trips' });
+            return res.json(user.pendingTrips);
         }
 
         // Add trip to user's pending trips
