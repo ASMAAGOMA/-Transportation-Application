@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { BookmarkX, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import { selectCurrentUser } from '../features/auth/authSlice';
 import RideCard from './RideCard';
+import TripModal from './TripModal'; // Make sure to import the TripModal
 
 const PendingTrips = () => {
+    const [selectedTrip, setSelectedTrip] = useState(null);
     const user = useSelector(selectCurrentUser);
     const { data: trips, isLoading, isError, error } = useGetTripsQuery();
 
@@ -18,6 +20,20 @@ const PendingTrips = () => {
             )
             .filter(trip => trip !== undefined)
         : [];
+
+    const handleOpenModal = (trip) => {
+        setSelectedTrip(trip);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedTrip(null);
+    };
+
+    const handleBookTrip = (trip) => {
+        // Implement booking logic here
+        console.log('Booking trip:', trip);
+        // You might want to open a booking modal or navigate to a booking page
+    };
 
     if (isLoading) {
         return (
@@ -44,7 +60,8 @@ const PendingTrips = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4 relative">
+            {/* Existing component code */}
             <div className="max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-12">
                     <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
@@ -77,11 +94,13 @@ const PendingTrips = () => {
                             <div 
                                 key={trip._id} 
                                 className="transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                                onClick={() => handleOpenModal(trip)}
                             >
                                 <RideCard
                                     trip={trip}
                                     isPending={true}
                                     showRemoveButton={true}
+                                    onClick={() => handleOpenModal(trip)}
                                 />
                             </div>
                         ))}
@@ -97,6 +116,15 @@ const PendingTrips = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Trip Modal */}
+            {selectedTrip && (
+                <TripModal 
+                    trip={selectedTrip}
+                    onClose={handleCloseModal}
+                    onBook={handleBookTrip}
+                />
+            )}
         </div>
     );
 };
