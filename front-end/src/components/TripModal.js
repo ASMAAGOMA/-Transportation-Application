@@ -13,12 +13,12 @@ const TripModal = ({ trip, onClose, onBook }) => {
   const [addPending] = useAddPendingTripMutation();
   const [removePending] = useRemovePendingTripMutation();
 
-  // Ensure useMemo is always called
+  // Fix useMemo to always return a boolean
   const isPendingTrip = useMemo(() => {
-    if (!trip) return false; // Handle the case where trip is null
-    return user?.pendingTrips?.includes(trip._id);
+    return trip && user?.pendingTrips ? user.pendingTrips.includes(trip._id) : false;
   }, [user, trip]);
 
+  // Early return if trip is null
   if (!trip) return null;
 
   const isUpcoming = new Date(trip.startDate) > new Date();
@@ -53,7 +53,6 @@ const TripModal = ({ trip, onClose, onBook }) => {
       alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
     }
   };
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar relative">

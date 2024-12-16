@@ -54,9 +54,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
   };
 
   return (
-    <div 
-      className="relative bg-white rounded-lg shadow-md overflow-hidden group"
-    >
+    <div className="relative bg-white rounded-lg shadow-md overflow-hidden group">
       {/* Pending Added Notification */}
       {isPendingAdded && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 z-50">
@@ -65,7 +63,8 @@ const RideCard = ({ trip, onClick, onBook }) => {
         </div>
       )}
 
-      <div onClick={onClick} className="cursor-pointer">
+      {/* Position the pending button absolutely within the image container */}
+      <div className="relative">
         <img 
           src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
           alt={trip.destination}
@@ -74,7 +73,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
         
         {isUpcoming && (
           <div 
-            className="absolute top-4 right-4 relative"
+            className="absolute top-2 right-2"
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
@@ -95,8 +94,11 @@ const RideCard = ({ trip, onClick, onBook }) => {
             )}
           </div>
         )}
+      </div>
 
+      <div onClick={onClick} className="cursor-pointer">
         <div className="p-4">
+          {/* Rest of the card content remains the same */}
           <div className="flex justify-between items-start mb-3">
             <h3 className="text-lg font-semibold">{trip.destination}</h3>
             <span className="text-lg font-bold text-indigo-600">${trip.price}</span>
