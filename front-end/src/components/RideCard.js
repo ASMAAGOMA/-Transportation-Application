@@ -1,112 +1,138 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { format } from 'date-fns';
+import { Calendar, Clock, MapPin, PlusCircle, Check } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCurrentUser, updateUserPendingTrips } from '../features/auth/authSlice';
 import { useAddPendingTripMutation, useRemovePendingTripMutation } from '../features/auth/authApiSlice';
 
-const RideCard = ({ trip, onClick, isPending, showRemoveButton }) => {
-    const user = useSelector(selectCurrentUser);
-    const dispatch = useDispatch();
+const RideCard = ({ trip, onClick, onBook }) => {
+  const [isPendingAdded, setIsPendingAdded] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const user = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
+  
+  const [addPending] = useAddPendingTripMutation();
+  const [removePending] = useRemovePendingTripMutation();
+
+  const isUpcoming = new Date(trip.startDate) > new Date();
+
+  const isPendingTrip = useMemo(() => 
+    user?.pendingTrips?.includes(trip._id), 
+    [user, trip._id]
+  );
+
+  const handlePendingClick = async (e) => {
+    e.stopPropagation();
     
-    const [addPending] = useAddPendingTripMutation();
-    const [removePending] = useRemovePendingTripMutation();
+    if (!user) {
+      alert("You must be logged in to add trips to pending.");
+      return;
+    }
 
-    const isPendingTrip = useMemo(() => 
-        user?.pendingTrips?.includes(trip._id), // Updated to use _id
-        [user, trip._id]
-    );
-
-    const handlePendingClick = async (e) => {
-        e.stopPropagation();
+    try {
+      let result;
+      if (isPendingTrip) {
+        result = await removePending(trip._id).unwrap();
+        dispatch(updateUserPendingTrips(
+          user.pendingTrips.filter(id => id !== trip._id)
+        ));
+      } else {
+        result = await addPending(trip._id).unwrap();
+        dispatch(updateUserPendingTrips([
+          ...(user.pendingTrips || []), 
+          trip._id
+        ]));
         
-        if (!user) {
-            alert("You must be logged in to add trips to pending.");
-            return;
-        }
-    
-        try {
-            let result;
-            if (isPendingTrip) {
-                result = await removePending(trip._id).unwrap();
-            } else {
-                result = await addPending(trip._id).unwrap();
-            }
-            
-            // Update the user's pending trips in the Redux store
-            if (user && user.pendingTrips) {
-                const updatedPendingTrips = isPendingTrip
-                    ? user.pendingTrips.filter(id => id !== trip._id)
-                    : [...user.pendingTrips, trip._id];
-                dispatch(updateUserPendingTrips(updatedPendingTrips));
-            }
-        } catch (err) {
-            // Add more detailed error handling
-            console.error('Failed to update pending trip:', err);
-            console.error('Error details:', {
-                status: err.status,
-                data: err.data,
-                message: err.data?.message || 'Unknown error'
-            });
-    
-            // If the error is specifically about the trip already being in pending trips, 
-            // you might want to just ignore it or show a different message
-            if (err.status === 400 && err.data?.message === 'Trip already in pending trips') {
-                // Optionally, you could just return without showing an error
-                return;
-            }
-    
-            // Show a generic error message
-            alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
-        }
-    };
+        // Show temporary "Added to Pending" message
+        setIsPendingAdded(true);
+        setTimeout(() => setIsPendingAdded(false), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to update pending trip:', err);
+      alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
+    }
+  };
 
-    const formattedDate = new Date(trip.startDate).toLocaleDateString('en-US', {
-        day: 'numeric',
-        month: 'long'
-    });
-
-    return (
-        <div 
-            className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onClick && onClick(trip)}
-        >
-            <div className="relative">
-                <img 
-                    src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
-                    alt={`${trip.origin} to ${trip.destination}`}
-                    className="w-full h-48 object-cover"
-                />
-                <button 
-                    className={`absolute top-4 right-4 p-2 rounded-full 
-                        ${isPendingTrip ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
-                    onClick={handlePendingClick}
-                >
-                    {isPendingTrip ? 'Pending' : 'Add to Pending'}
-                </button>
-            </div>
-            
-            <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-semibold">{trip.destination}</h3>
-                    <span className="text-gray-600">${trip.price}</span>
-                </div>
-                
-                <div className="text-gray-600 mb-2">
-                    <p>From: {trip.origin}</p>
-                    <p>Date: {formattedDate}</p>
-                    <p>Duration: {trip.duration} days</p>
-                </div>
-
-                {showRemoveButton && isPending && (
-                    <button
-                        onClick={handlePendingClick}
-                        className="mt-2 w-full py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                    >
-                        Remove from Pending
-                    </button>
-                )}
-            </div>
+  return (
+    <div 
+      className="relative bg-white rounded-lg shadow-md overflow-hidden group"
+    >
+      {/* Pending Added Notification */}
+      {isPendingAdded && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 z-50">
+          <Check className="w-5 h-5" />
+          Trip Added to Pending
         </div>
-    );
+      )}
+
+      <div onClick={onClick} className="cursor-pointer">
+        <img 
+          src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
+          alt={trip.destination}
+          className="w-full h-48 object-cover"
+        />
+        
+        {isUpcoming && (
+          <div 
+            className="absolute top-4 right-4 relative"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            <button
+              onClick={handlePendingClick}
+              className={`rounded-full p-2 shadow-lg transition-colors 
+                ${isPendingTrip 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-white text-indigo-600 opacity-0 group-hover:opacity-100'}`}
+            >
+              {isPendingTrip ? <Check className="w-6 h-6" /> : <PlusCircle className="w-6 h-6" />}
+            </button>
+            
+            {showTooltip && !isPendingTrip && (
+              <div className="absolute top-full mt-2 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded-md">
+                Add to Pending
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="p-4">
+          <div className="flex justify-between items-start mb-3">
+            <h3 className="text-lg font-semibold">{trip.destination}</h3>
+            <span className="text-lg font-bold text-indigo-600">${trip.price}</span>
+          </div>
+
+          <div className="space-y-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              <span>{trip.origin}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              <span>{format(new Date(trip.startDate), 'PPP')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span>{trip.duration} hours</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Book button section */}
+      <div className="p-4 pt-0">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onBook(trip);
+          }}
+          className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Book Now
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default RideCard;
