@@ -21,7 +21,7 @@ const getPendingTrips = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
+        console.log('Populated Pending Trips:', user.pendingTrips);
         res.json(user.pendingTrips || [])
     } catch (err) {
         console.error('Error in getPendingTrips:', err);

@@ -8,6 +8,23 @@ const PendingTrips = () => {
     const user = useSelector(selectCurrentUser);
     const { data: trips, isLoading, isError, error } = useGetTripsQuery();
 
+    // Add some console logs for debugging
+    console.log('User Pending Trips:', user?.pendingTrips);
+    console.log('All Trips:', trips);
+
+    // Modify the filtering to be more robust
+    const pendingTrips = user?.pendingTrips?.length && trips
+        ? user.pendingTrips
+            .map(pendingTripId => 
+                trips.ids
+                    .map(id => trips.entities[id])
+                    .find(trip => trip._id === pendingTripId)
+            )
+            .filter(trip => trip !== undefined)
+        : [];
+
+    console.log('Filtered Pending Trips:', pendingTrips);
+
     if (isLoading) {
         return <div className="flex justify-center items-center min-h-screen">
             <p>Loading your pending trips...</p>
@@ -19,13 +36,6 @@ const PendingTrips = () => {
             <p className="text-red-500">Error: {error?.data?.message || 'Failed to load pending trips'}</p>
         </div>;
     }
-
-    // Filter trips to only show pending ones
-    const pendingTrips = user?.pendingTrips?.length
-        ? trips?.ids
-            .map(id => trips.entities[id])
-            .filter(trip => user.pendingTrips.includes(trip.id))
-        : [];
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -39,7 +49,7 @@ const PendingTrips = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {pendingTrips.map(trip => (
                         <RideCard
-                            key={trip.id}
+                            key={trip._id}
                             trip={trip}
                             isPending={true}
                             showRemoveButton={true}
