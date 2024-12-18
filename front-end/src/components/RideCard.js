@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, PlusCircle, Check } from 'lucide-react';
