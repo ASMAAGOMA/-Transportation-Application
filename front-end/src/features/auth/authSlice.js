@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Async thunk for fetching user data
 export const fetchUserData = createAsyncThunk('auth/fetchUserData', async (accessToken) => {
     const response = await fetch('http://localhost:3500/auth/me', {
         headers: {
@@ -29,7 +28,7 @@ const authSlice = createSlice({
         setCredentials: (state, action) => {
             const { accessToken, user } = action.payload;
             state.token = accessToken;
-            state.user = user; // Add this line
+            state.user = user;
             state.isLoggedIn = true;
             console.log('setCredentials reducer called. New state:', state);
         },
@@ -41,9 +40,9 @@ const authSlice = createSlice({
             state.status = 'idle';
             state.error = null;
         },
-        updateUserFavorites: (state, action) => {
+        updateUserPendingTrips: (state, action) => {
             if (state.user) {
-                state.user.favorites = action.payload;
+                state.user.pendingTrips = action.payload;
             }
         },
         togglePersist: (state) => {
@@ -68,11 +67,16 @@ const authSlice = createSlice({
     }
 });
 
-export const { setCredentials, logOut, togglePersist, updateUserFavorites } = authSlice.actions;
+export const { 
+    setCredentials, 
+    logOut, 
+    togglePersist, 
+    updateUserPendingTrips 
+} = authSlice.actions;
 
 export default authSlice.reducer;
 
-// Selectors to access state
+// Selectors
 export const selectCurrentUser = (state) => {
     console.log('selectCurrentUser called. Current user:', state.auth.user);
     return state.auth.user;
@@ -87,6 +91,7 @@ export const selectIsLoggedIn = (state) => {
     console.log('selectIsLoggedIn called. Is logged in:', state.auth.isLoggedIn);
     return state.auth.isLoggedIn;
 };
+
 export const selectPersist = (state) => state.auth.persist;
 export const selectAuthStatus = (state) => state.auth.status;
 export const selectAuthError = (state) => state.auth.error;

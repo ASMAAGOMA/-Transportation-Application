@@ -32,7 +32,7 @@ const Sidebar = () => {
           active={location.pathname === '/'} 
         />
         <SidebarItem 
-          to="/upcoming" 
+          to="/pending" 
           icon={faClock} 
           label="Upcoming" 
           active={location.pathname === '/upcoming'} 

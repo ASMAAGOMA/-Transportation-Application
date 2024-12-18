@@ -46,42 +46,42 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }),
         refresh: builder.mutation({
             query: () => ({
-              url: '/auth/refresh',
-              method: 'GET',
+                url: '/auth/refresh',
+                method: 'GET',
             }),
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-              try {
-                const { data } = await queryFulfilled;
-                console.log('Refresh successful, new data:', data);
-                const { accessToken } = data;
-                dispatch(setCredentials({ accessToken }));
-              } catch (err) {
-                console.error('Refresh failed:', err);
-              }
+                try {
+                    const { data } = await queryFulfilled;
+                    console.log('Refresh successful, new data:', data);
+                    const { accessToken } = data;
+                    dispatch(setCredentials({ accessToken }));
+                } catch (err) {
+                    console.error('Refresh failed:', err);
+                }
             }
-          }),
+        }),
         getCurrentUser: builder.query({
             query: () => '/auth/me',
             providesTags: ['User']
         }),
-        getFavoriteProducts: builder.query({
-            query: () => `/users/favorites`,
-            providesTags: ['Favorites']
+        getPendingTrips: builder.query({
+            query: () => `/users/pending-trips`, // Updated endpoint
+            providesTags: ['PendingTrips']
         }),
-        addFavoriteProduct: builder.mutation({
-            query: (productId) => ({
-                url: `/users/favorites`,
+        addPendingTrip: builder.mutation({
+            query: (tripId) => ({
+                url: `/users/pending-trips`, // Updated endpoint
                 method: 'POST',
-                body: { productId }
+                body: { tripId }
             }),
-            invalidatesTags: ['Favorites']
+            invalidatesTags: ['PendingTrips', 'User']
         }),
-        removeFavoriteProduct: builder.mutation({
-            query: (productId) => ({
-                url: `/users/favorites/${productId}`,
+        removePendingTrip: builder.mutation({
+            query: (tripId) => ({
+                url: `/users/pending-trips/${tripId}`, // Updated endpoint
                 method: 'DELETE',
             }),
-            invalidatesTags: ['Favorites']
+            invalidatesTags: ['PendingTrips']
         })
     })
 });
@@ -92,7 +92,7 @@ export const {
     useLogoutMutation,
     useRefreshMutation,
     useGetCurrentUserQuery,
-    useGetFavoriteProductsQuery,
-    useAddFavoriteProductMutation,
-    useRemoveFavoriteProductMutation
+    useGetPendingTripsQuery,
+    useAddPendingTripMutation,
+    useRemovePendingTripMutation
 } = authApiSlice;
