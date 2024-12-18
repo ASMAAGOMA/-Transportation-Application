@@ -21,7 +21,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
 
   const handleBooking = () => {
     console.log('Trip data being passed:', trip);
-    navigate('/booking', { state: { ...trip, image: trip.image } }); // تمرير بيانات الرحلة بما في ذلك الصورة
+    navigate('/booking', { state: { ...trip, image: trip.image } }); // pass data 
   };
 
   const isPendingTrip = useMemo(() => 
