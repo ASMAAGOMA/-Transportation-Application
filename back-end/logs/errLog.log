@@ -22,3 +22,7 @@
 20241203	19:32:36	aaf6d1f3-96c7-4c38-ac8c-7f69dcbc8ef9	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
 20241203	19:53:40	aa156d1b-6eca-45a5-bc94-8966c5bf5201	ValidationError: User validation failed: username: Path `username` is required.	POST	/auth/register	http://localhost:3000
 20241205	00:22:53	a1e5af3a-c615-4453-9ed6-fd0b3c0b6b5f	CastError: Cast to ObjectId failed for value ""6750c7b849785092396eeb30"" (type string) at path "_id" for model "Trip"	PATCH	/trips	undefined
+20241214	03:25:50	0acb11c8-83d1-4245-a539-2b1a702abc70	MongoServerSelectionError: connect ETIMEDOUT 15.184.123.245:27017	GET	/trips	http://localhost:3000
+20241214	03:28:05	56133d6b-5051-4833-bb96-f84c98ba93a0	MongoServerSelectionError: connect ETIMEDOUT 15.184.123.245:27017	GET	/trips	http://localhost:3000
+20241214	03:47:08	dec53f21-aa91-49c6-8179-c9638fed02d8	MongoServerSelectionError: connect ETIMEDOUT 15.184.123.245:27017	GET	/trips	http://localhost:3000
+20241214	04:00:29	e82f9f40-6c50-4cec-b722-87640022bc31	MongoServerSelectionError: connect ETIMEDOUT 15.184.123.245:27017	GET	/trips	http://localhost:3000

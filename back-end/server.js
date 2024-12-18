@@ -25,11 +25,15 @@ app.use(cookieParser())
 
 app.use('/', express.static(path.join(__dirname, 'public')))
 
-app.use('/', require('./routes/root'))
-app.use('/auth', require('./routes/authRoutes'))
-app.use('/users', require('./routes/userRoutes'))
+
+
+
+app.use('/', require('./routes/root'));
+app.use('/auth', require('./routes/authRoutes'));
+app.use('/users', require('./routes/userRoutes'));
 app.use('/trips', require('./routes/tripsRoutes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api', require('./routes/bookingRoutes'));
 
 app.all('*', (req, res) => {
     res.status(404)
@@ -40,7 +44,7 @@ app.all('*', (req, res) => {
     } else {
         res.type('txt').send('404 Not Found')
     }
-})
+});
 
 app.use(errorHandler)
 

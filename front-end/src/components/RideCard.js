@@ -1,9 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, Users, PlusCircle } from 'lucide-react';
 
 const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
   const isUpcoming = new Date(trip.startDate) > new Date();
+  const navigate = useNavigate();   //Aisha
+
+  const handleBooking = () => {
+    console.log('Trip data being passed:', trip);
+    navigate('/booking', { state: { ...trip, image: trip.image } }); // تمرير بيانات الرحلة بما في ذلك الصورة
+  };
 
   return (
     <div 
@@ -57,7 +64,7 @@ const RideCard = ({ trip, onClick, onAddToPending, onBook }) => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onBook(trip);
+            handleBooking(); //to transfer it to booking page
           }}
           className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
         >
