@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import { BookmarkX, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import { selectCurrentUser } from '../features/auth/authSlice';
@@ -10,6 +11,7 @@ const PendingTrips = () => {
     const [selectedTrip, setSelectedTrip] = useState(null);
     const user = useSelector(selectCurrentUser);
     const { data: trips, isLoading, isError, error } = useGetTripsQuery();
+    const navigate = useNavigate();
 
     const pendingTrips = user?.pendingTrips?.length && trips
         ? user.pendingTrips
@@ -84,7 +86,9 @@ const PendingTrips = () => {
                         <p className="text-gray-500 mb-6">
                             Start exploring and add some exciting destinations to your pending list!
                         </p>
-                        <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors">
+                        <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+                                onClick={() => navigate("/")}
+                        >
                             Explore Trips
                         </button>
                     </div>
