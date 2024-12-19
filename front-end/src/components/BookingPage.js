@@ -1,16 +1,51 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
+import { MapPin, Sparkles } from 'lucide-react';
 import '../App.css';
 
 //for trip data from home page
 const BookingPage = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const tripDetails = location.state; 
 
   if (!tripDetails) {
-    return <p className="text-center text-red-500 mt-10">Trip details not available. Please go back and try again.</p>;
-  }
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4 relative">
+          {/* Existing component code */}
+          <div className="max-w-6xl mx-auto">
+              <div className="flex items-center justify-between mb-12">
+                  <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+                      Book a wonderfull trip 
+                  </h1>
+                  <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md">
+                      <Sparkles className="w-5 h-5 text-yellow-500" />
+                      <span className="text-sm font-medium text-gray-700">
+                          Upcoming Adventures
+                      </span>
+                  </div>
+              </div>
+
+              <div className="flex flex-col items-center justify-center bg-white rounded-xl shadow-lg p-12 text-center">
+                  <MapPin className="w-24 h-24 text-gray-300 mb-6" />
+                  <h2 className="text-2xl font-bold text-gray-700 mb-4">
+                      No booking Trips Yet
+                  </h2>
+                  <p className="text-gray-500 mb-6">
+                      Start exploring and add some exciting destinations to book it !
+                  </p>
+                  <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+                          onClick={() => navigate("/")}
+                  >
+                      Explore Trips
+                  </button>
+              </div>
+              
+          </div>  
+      </div>  
+    )};
+              
   
 
   const [formData, setFormData] = useState({
@@ -34,7 +69,7 @@ const BookingPage = () => {
   };
 
   const makePayment = async (e) => {
-    e.preventDefault(); // لمنع إعادة تحميل الصفحة
+    e.preventDefault(); //Stop reloading page
     
     try {
       // Stripe Public Key
@@ -50,7 +85,7 @@ const BookingPage = () => {
         destination: tripDetails.destination
       };
   
-      // إرسال البيانات إلى الـ backend
+      //Resend the data to the backend
       const response = await fetch(apiURL, {
         method: "POST",
         headers: {
@@ -59,17 +94,17 @@ const BookingPage = () => {
         body: JSON.stringify(payload),
       });
   
-      // التحقق من الرد
+      //check the response
       if (!response.ok) {
         throw new Error("Failed to process payment");
       }
   
-      // استخراج الـ paymentUrl من الرد
+      //get the paymentURL
       const data = await response.json();
       const { paymentUrl } = data;
   
       if (paymentUrl) {
-        // إعادة توجيه المستخدم إلى صفحة الدفع الخاصة بـ Stripe
+        //Forward user to stripe payment page
         window.location.href = paymentUrl;
       } else {
         console.error("Payment URL not found");
