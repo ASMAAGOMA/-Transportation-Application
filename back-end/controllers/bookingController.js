@@ -1,5 +1,5 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET);  // Add Stripe import
-
+const BookedTrip = require('../models/BookedTrip');
 const bookingController = {
   createBookingSession: async (req, res) => {
     const { tickets, paymentType, totalPrice, tripId, destination } = req.body;
