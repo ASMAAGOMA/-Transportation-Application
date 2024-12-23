@@ -51,7 +51,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/pending" element={<PendingTrips />} />
-            <Route path="/booking" element={<BookingPage />}></Route>
+            <Route path="/booking" element={<BookingPage />} />
             <Route path="booked-trips" element={<BookedTripsPage />} />
             <Route path="success" element={<PaymentSuccess />} />
             {/* Add other protected routes here */}
