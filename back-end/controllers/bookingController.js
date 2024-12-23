@@ -59,6 +59,40 @@ const bookingController = {
       res.status(500).json({ message: 'Payment failed', error: error.message });
     }
   },
+  // Add to bookingController.js
+getBookingBySession: async (req, res) => {
+    try {
+      const booking = await BookedTrip.findOne({ 
+        stripeSessionId: req.params.sessionId 
+      });
+      
+      if (!booking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+      
+      res.json({ bookingId: booking._id });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+  
+  updateBookingStatus: async (req, res) => {
+    try {
+      const booking = await BookedTrip.findByIdAndUpdate(
+        req.params.bookingId,
+        { paymentStatus: req.body.status },
+        { new: true }
+      );
+      
+      if (!booking) {
+        return res.status(404).json({ message: 'Booking not found' });
+      }
+      
+      res.json(booking);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 };
 
 module.exports = bookingController;

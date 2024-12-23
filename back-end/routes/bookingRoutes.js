@@ -71,6 +71,15 @@ router.patch("/booking/:bookingId/status",
   }
 );
 
+// Add to bookingRoutes.js
+router.get("/booking/session/:sessionId", async (req, res, next) => {
+  try {
+    await bookingController.getBookingBySession(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Apply error handling middleware
 router.use(handleBookingError);
 
