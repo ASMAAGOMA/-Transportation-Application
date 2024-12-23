@@ -20,46 +20,6 @@ const BookingPage = () => {
     paymentType: "full",
   });
 
-  const makePayment = async (e) => {
-    e.preventDefault(); // Prevent form submission
-    
-    if (!token) {
-      console.error("No user token available");
-      return;
-    }
-  
-    try {
-      setLoading(true);
-  
-      const response = await fetch('http://localhost:3500/api/booking', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          tickets: formData.tickets,
-          paymentType: formData.paymentType,
-          totalPrice: totalPrice,
-          tripId: tripDetails._id,
-          destination: tripDetails.destination,
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-  
-      const { paymentUrl } = await response.json();
-      
-      // Redirect to Stripe checkout instead of success page
-      window.location.href = paymentUrl;
-    } catch (error) {
-      console.error('Error during payment:', error);
-      setLoading(false);
-    }
-  };
-
   if (!tripDetails) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4">
@@ -92,7 +52,9 @@ const BookingPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const makePayment = async () => {
+  const handlePayment = async (e) => {
+    e.preventDefault();
+    
     if (!token) {
       console.error("No user token available");
       return;
@@ -105,7 +67,7 @@ const BookingPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           tickets: formData.tickets,
@@ -120,11 +82,10 @@ const BookingPage = () => {
         throw new Error(`Error: ${response.statusText}`);
       }
   
-      const data = await response.json();
-      navigate('/success'); // Redirect to success page
+      const { paymentUrl } = await response.json();
+      window.location.href = paymentUrl;
     } catch (error) {
       console.error('Error during payment:', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -172,7 +133,7 @@ const BookingPage = () => {
               </div>
             </div>
 
-            <form onSubmit={makePayment} className="space-y-6">
+            <form onSubmit={handlePayment} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Number of Tickets
