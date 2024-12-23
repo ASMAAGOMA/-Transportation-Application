@@ -65,36 +65,32 @@ const BookedTripsPage = () => {
   const TabButton = ({ label, count, isActive, onClick }) => (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-lg transition-all ${
-        isActive
-          ? 'bg-indigo-600 text-white shadow-lg'
+      className={`px-6 py-3 rounded-lg transition-all text-base ${
+        isActive 
+          ? 'bg-indigo-600 text-white shadow-lg' 
           : 'bg-white text-gray-600 hover:bg-gray-50'
       }`}
     >
       {label} ({count})
     </button>
   );
-
+  
   const TripCard = ({ trip }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4">
-      <img
-        src={
-          trip.image
-            ? `http://localhost:3500/uploads/${trip.image}`
-            : '/images/default-trip.jpg'
-        }
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <img 
+        src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
         alt={trip.destination}
-        className="w-full h-48 object-cover rounded-t-lg"
+        className="w-full h-48 object-cover md:h-60 lg:h-72"
       />
-      <div className="pt-4">
+      <div className="p-4">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-lg font-semibold">{trip.destination}</h3>
           <span className="text-sm text-gray-500">
             Booked: {format(new Date(trip.bookingDate), 'PPP')}
           </span>
         </div>
-
-        <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+        
+        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4 text-indigo-600" />
             <span>From: {trip.origin}</span>
@@ -112,7 +108,7 @@ const BookedTripsPage = () => {
             <span>{trip.tickets} tickets</span>
           </div>
         </div>
-
+  
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Total paid:</span>
@@ -124,7 +120,7 @@ const BookedTripsPage = () => {
       </div>
     </div>
   );
-
+  
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
