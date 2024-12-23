@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { MapPin, Calendar, Clock, CreditCard, Users, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
+
+// Initialize Stripe outside the component with the public key
+const stripePromise = loadStripe("pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC");
 
 const BookingPage = () => {
   const navigate = useNavigate();
@@ -29,7 +32,10 @@ const BookingPage = () => {
     setLoading(true);
     
     try {
-      const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error("Stripe failed to initialize");
+      }
       
       const payload = {
         tickets: formData.tickets,
@@ -43,18 +49,19 @@ const BookingPage = () => {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}` // Add auth token
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(payload),
+        credentials: 'include' // Include cookies if you're using them
       });
   
       if (!response.ok) {
-        throw new Error("Failed to process payment");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to process payment");
       }
       
       const { paymentUrl } = await response.json();
       if (paymentUrl) {
-        // Store booking details in localStorage before redirect
         localStorage.setItem('pendingBooking', JSON.stringify({
           ...payload,
           tripDetails,
