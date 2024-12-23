@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { format, subDays, subMonths, isWithin } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
+import { useSelector } from 'react-redux';
+
 
 const BookedTripsPage = () => {
     const [bookedTrips, setBookedTrips] = useState([]);
