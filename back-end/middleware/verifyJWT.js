@@ -19,9 +19,9 @@ const verifyJWT = (req, res, next) => {
         // Log the decoded payload to verify its structure
         console.log('Decoded payload:', decoded);
         
-        // Ensure `decoded.UserInfo` and `decoded.UserInfo.id` are correct
-        req.user = decoded.UserInfo.id;
-        req.roles = decoded.UserInfo.roles;
+        // Assign the whole UserInfo object to req.user
+        req.user = decoded.UserInfo;  // Now req.user has the whole UserInfo object
+        req.roles = decoded.UserInfo.roles;  // Still preserving roles separately if needed
         next();
     });
 };
