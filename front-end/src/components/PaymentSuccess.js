@@ -2,66 +2,89 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectCurrentToken } from '../features/auth/authSlice';
-import { Loader2 } from 'lucide-react';
+import { Loader2, XCircle, CheckCircle } from 'lucide-react';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [error, setError] = useState(null);
+  const [status, setStatus] = useState('processing');
   const token = useSelector(selectCurrentToken);
   
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const stripeSessionId = searchParams.get('session_id');
+    const sessionId = searchParams.get('session_id');
+    const bookingId = searchParams.get('booking_id');
 
-    const handleSuccessfulPayment = async () => {
+    const verifyPayment = async () => {
       try {
-        const response = await fetch(`http://localhost:3500/api/booking/verify-payment`, {
+        const response = await fetch('http://localhost:3500/api/booking/verify-payment', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ sessionId: stripeSessionId })
+          body: JSON.stringify({ sessionId, bookingId })
         });
 
         if (!response.ok) {
           throw new Error('Payment verification failed');
         }
 
-        navigate('/booked-trips', { replace: true });
-      } catch (err) {
-        setError(err.message);
+        setStatus('success');
+        setTimeout(() => {
+          navigate('/booked-trips', { replace: true });
+        }, 2000);
+      } catch (error) {
+        console.error('Verification error:', error);
+        setStatus('error');
       }
     };
 
-    if (stripeSessionId) {
-      handleSuccessfulPayment();
+    if (sessionId && bookingId) {
+      verifyPayment();
+    } else {
+      setStatus('error');
     }
-  }, [navigate, location, token]);
+  }, [location, navigate, token]);
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-          <h2 className="text-red-600 text-xl font-semibold mb-4">Payment Error</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => navigate('/booking')}
-            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
-          >
-            Return to Booking
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const renderContent = () => {
+    switch (status) {
+      case 'processing':
+        return (
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
+            <p className="mt-4 text-gray-600">Verifying your payment...</p>
+          </div>
+        );
+      
+      case 'success':
+        return (
+          <div className="text-center">
+            <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
+            <p className="mt-4 text-gray-600">Payment successful! Redirecting...</p>
+          </div>
+        );
+      
+      case 'error':
+        return (
+          <div className="text-center">
+            <XCircle className="w-12 h-12 text-red-500 mx-auto" />
+            <p className="mt-4 text-gray-600">Payment verification failed</p>
+            <button
+              onClick={() => navigate('/booking')}
+              className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+            >
+              Return to Booking
+            </button>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto" />
-        <p className="mt-4 text-gray-600">Processing your payment...</p>
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        {renderContent()}
       </div>
     </div>
   );
