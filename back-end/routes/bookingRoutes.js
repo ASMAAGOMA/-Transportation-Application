@@ -28,7 +28,7 @@ const handleBookingError = (err, req, res, next) => {
 router.use(verifyJWT);
 
 // Create booking and initialize Stripe session
-router.post("/booking", 
+router.post('/api/booking', 
   async (req, res, next) => {
     try {
       await bookingController.createBookingSession(req, res);
