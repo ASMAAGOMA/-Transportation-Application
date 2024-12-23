@@ -19,7 +19,8 @@ const bookingController = {
         tickets,
         totalPrice,
         paymentType,
-        paymentStatus: 'pending'
+        paymentStatus: 'pending',
+        bookingDate: new Date()
       });
       
       await booking.save();
