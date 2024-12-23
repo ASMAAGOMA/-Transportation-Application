@@ -20,7 +20,7 @@ const verifyJWT = (req, res, next) => {
         console.log('Decoded payload:', decoded);
         
         // Assign the whole UserInfo object to req.user
-        req.user = decoded.UserInfo.id;  // Now req.user has the whole UserInfo object
+        req.user = decoded.UserInfo;  // Now req.user has the whole UserInfo object
         req.roles = decoded.UserInfo.roles;  // Still preserving roles separately if needed
         next();
     });
