@@ -80,7 +80,7 @@ const BookedTripsPage = () => {
       <img 
         src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
         alt={trip.destination}
-        className="w-full h-48 object-cover md:h-60 lg:h-72"
+        className="w-full h-48 object-cover md:h-64 lg:h-72"
       />
       <div className="p-4">
         <div className="flex justify-between items-start mb-3">
