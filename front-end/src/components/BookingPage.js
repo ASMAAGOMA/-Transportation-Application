@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { selectCurrentToken, selectCurrentUser } from '../features/auth/authSlice';
 
 const STRIPE_PUBLIC_KEY = "pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC";
-const API_URL = process.env.REACT_APP_API_URL || 'https://your-api-domain.com';
+const API_URL = 'http://localhost:3500'; // Use local API URL
 
 const BookingPage = () => {
   const navigate = useNavigate();
@@ -64,68 +64,71 @@ const BookingPage = () => {
   }
 
   const totalPrice = formData.paymentType === "full"
-    ? Math.round(tripDetails.price * formData.tickets)
-    : Math.round((tripDetails.price * formData.tickets) / 2);
+  ? Math.round(tripDetails.price * formData.tickets)
+  : Math.round((tripDetails.price * formData.tickets) / 2);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    setError(null);
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+  setError(null);
+};
 
-  const makePayment = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+const makePayment = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
 
-    try {
-      if (!user?._id) {
-        throw new Error("Please log in to continue with booking");
-      }
-
-      const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
-      
-      if (!stripe) {
-        throw new Error("Failed to initialize payment system");
-      }
-
-      const bookingData = {
-        userId: user._id,
-        tickets: formData.tickets,
-        paymentType: formData.paymentType,
-        totalPrice: totalPrice,
-        tripId: tripDetails._id,
-        destination: tripDetails.destination,
-        userEmail: user.email
-      };
-
-      const response = await fetch(`${API_URL}/api/booking`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(bookingData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Payment failed");
-      }
-
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
-      } else {
-        throw new Error("Invalid payment response");
-      }
-    } catch (error) {
-      console.error("Error during payment:", error);
-      setError(error.message || "Payment failed. Please try again.");
-    } finally {
-      setLoading(false);
+  try {
+    if (!user?._id) {
+      throw new Error("Please log in to continue with booking");
     }
-  };
+
+    const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
+    
+    if (!stripe) {
+      throw new Error("Failed to initialize payment system");
+    }
+
+    const bookingData = {
+      userId: user._id,
+      tickets: formData.tickets,
+      paymentType: formData.paymentType,
+      totalPrice: totalPrice,
+      tripId: tripDetails._id,
+      destination: tripDetails.destination,
+      userEmail: user.email
+    };
+
+    const response = await fetch(`${API_URL}/api/booking`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json"
+      },
+      credentials: 'include',
+      body: JSON.stringify(bookingData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Payment failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.paymentUrl) {
+      window.location.href = data.paymentUrl;
+    } else {
+      throw new Error("Invalid payment response");
+    }
+  } catch (error) {
+    console.error("Error during payment:", error);
+    setError(error.message || "Payment failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
