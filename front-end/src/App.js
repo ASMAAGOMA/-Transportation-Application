@@ -12,6 +12,8 @@ import BookingPage from './components/BookingPage';
 import PendingTrips from './components/PendingTrips';
 import { selectCurrentToken } from './features/auth/authSlice';
 import { useRefreshMutation } from './features/auth/authApiSlice';
+import BookedTripsPage from './components/BookedTripsPage';
+import PaymentSuccess from './components/PaymentSuccess';
 
 import './index.css';
 import './globals.css';
@@ -53,6 +55,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/pending" element={<PendingTrips />} />
             <Route path="/booking" element={<BookingPage />}></Route>
+            <Route path="booked-trips" element={<BookedTripsPage />} />
+            <Route path="success" element={<PaymentSuccess />} />
             {/* Add other protected routes here */}
           </Route>
         </Route>
