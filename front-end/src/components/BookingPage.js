@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
 import { selectCurrentToken } from '../features/auth/authSlice';
 
-const stripePromise = loadStripe("sk_test_51QW3x1HzLvE2BAXyzzKfSSl5Bb3E1XEDQy5sap3oGAwNPmQV5KQhFNb0DHLZlFawlXHEAoQ7XiWXq2Mc8BvhXKkr00QuM7Y6ZF");
+const stripePromise = loadStripe("pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC");
 
 const BookingPage = () => {
   const navigate = useNavigate();
