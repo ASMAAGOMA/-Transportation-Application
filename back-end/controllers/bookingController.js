@@ -1,3 +1,4 @@
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const bookingController = {
     createBookingSession: async (req, res) => {
       const { tickets, paymentType, totalPrice, tripId, destination } = req.body;
@@ -8,7 +9,9 @@ const bookingController = {
         if (!userId) {
           return res.status(401).json({ message: "Unauthorized - Please log in" });
         }
-  
+        if (!tickets || !paymentType || !totalPrice || !tripId || !destination) {
+            return res.status(400).json({ message: "Missing required fields" });
+          }
         const amount = totalPrice * 100; // Stripe uses cents
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ["card"],
