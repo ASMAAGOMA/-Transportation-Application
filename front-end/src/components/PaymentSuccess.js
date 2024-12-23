@@ -13,30 +13,14 @@ const PaymentSuccess = () => {
   useEffect(() => {
     const handleSuccessfulPayment = async () => {
       try {
-        // Get session_id from URL if present
-        const sessionId = searchParams.get('session_id');
+        const bookingId = searchParams.get('booking_id');
         
-        if (!sessionId) {
-          throw new Error('No session ID found in URL');
+        if (!bookingId) {
+          throw new Error('No booking ID found');
         }
 
-        // Fetch booking details using session ID
-        const response = await fetch(`http://localhost:3500/api/booking/session/${sessionId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch booking details');
-        }
-
-        const bookingData = await response.json();
-        
         // Update booking status to completed
-        await fetch(`http://localhost:3500/api/booking/${bookingData.bookingId}/status`, {
+        const response = await fetch(`http://localhost:3500/api/booking/${bookingId}/status`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -45,7 +29,10 @@ const PaymentSuccess = () => {
           body: JSON.stringify({ status: 'completed' })
         });
 
-        // Navigate to booked trips page
+        if (!response.ok) {
+          throw new Error('Failed to update booking status');
+        }
+
         navigate('/booked-trips');
       } catch (err) {
         console.error('Error handling successful payment:', err);
