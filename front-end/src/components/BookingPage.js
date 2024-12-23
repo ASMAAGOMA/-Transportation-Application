@@ -4,7 +4,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { MapPin, Calendar, Clock, CreditCard, Users, ArrowLeft, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
-import { selectCurrentToken } from '../features/auth/authSlice';
+import { selectCurrentToken, selectCurrentUser } from '../features/auth/authSlice'; // Added selectCurrentUser
 import '../App.css';
 
 const BookingPage = () => {
@@ -13,6 +13,7 @@ const BookingPage = () => {
   const tripDetails = location.state;
   const [loading, setLoading] = useState(false);
   const token = useSelector(selectCurrentToken);
+  const user = useSelector(selectCurrentUser); // Get user data from Redux store
 
   const [formData, setFormData] = useState({
     tickets: 1,
@@ -68,6 +69,10 @@ const BookingPage = () => {
     setLoading(true);
 
     try {
+      if (!user?._id) {
+        throw new Error("User not authenticated");
+      }
+
       const stripe = await loadStripe("pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC");
 
       const response = await fetch("http://localhost:3500/api/booking", {
@@ -77,6 +82,7 @@ const BookingPage = () => {
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
+          userId: user._id, // Add user ID to request
           tickets: formData.tickets,
           paymentType: formData.paymentType,
           totalPrice: totalPrice,
@@ -98,11 +104,12 @@ const BookingPage = () => {
       }
     } catch (error) {
       console.error("Error during payment:", error);
+      // Add user feedback
+      alert(error.message || "Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
