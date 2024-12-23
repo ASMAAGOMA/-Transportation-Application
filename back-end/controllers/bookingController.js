@@ -1,4 +1,4 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const BookedTrip = require('../models/BookedTrip'); // Adjust the path to your model
 
 const bookingController = {
