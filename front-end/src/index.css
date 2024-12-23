@@ -25,24 +25,3 @@
     scrollbar-width: thin; /* Slim scrollbar for Firefox */
   }
   
-
-  @screen sm {
-    .card {
-      padding: 1rem;
-    }
-    .grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  
-  @screen md {
-    .grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-  
-  @screen lg {
-    .grid-cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }

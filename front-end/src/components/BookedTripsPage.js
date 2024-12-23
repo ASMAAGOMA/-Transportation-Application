@@ -65,7 +65,7 @@ const BookedTripsPage = () => {
   const TabButton = ({ label, count, isActive, onClick }) => (
     <button
       onClick={onClick}
-      className={`px-6 py-3 rounded-lg transition-all text-base ${
+      className={`px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base rounded-lg transition-all ${
         isActive 
           ? 'bg-indigo-600 text-white shadow-lg' 
           : 'bg-white text-gray-600 hover:bg-gray-50'
@@ -74,45 +74,45 @@ const BookedTripsPage = () => {
       {label} ({count})
     </button>
   );
-  
+
   const TripCard = ({ trip }) => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <img 
         src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
         alt={trip.destination}
-        className="w-full h-48 object-cover md:h-64 lg:h-72"
+        className="w-full h-32 sm:h-48 object-cover"
       />
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-lg font-semibold">{trip.destination}</h3>
-          <span className="text-sm text-gray-500">
+      <div className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3">
+          <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-0">{trip.destination}</h3>
+          <span className="text-xs sm:text-sm text-gray-500">
             Booked: {format(new Date(trip.bookingDate), 'PPP')}
           </span>
         </div>
         
-        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-indigo-600" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
             <span>From: {trip.origin}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
             <span>{format(new Date(trip.startDate), 'PPP')}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
             <span>{trip.duration} hours</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Users className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
             <span>{trip.tickets} tickets</span>
           </div>
         </div>
-  
-        <div className="mt-4 pt-4 border-t border-gray-100">
+
+        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-100">
           <div className="flex justify-between items-center">
-            <span className="text-gray-600">Total paid:</span>
-            <span className="text-lg font-semibold text-indigo-600">
+            <span className="text-sm text-gray-600">Total paid:</span>
+            <span className="text-base sm:text-lg font-semibold text-indigo-600">
               ${trip.totalPaid}
             </span>
           </div>
@@ -120,33 +120,33 @@ const BookedTripsPage = () => {
       </div>
     </div>
   );
-  
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8 px-2 sm:px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Booked Trips</h1>
-          <div className="flex gap-2">
-            <TabButton
-              label="Recent"
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-8 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Booked Trips</h1>
+          <div className="flex flex-wrap gap-2">
+            <TabButton 
+              label="Recent" 
               count={categorizedTrips.recent.length}
               isActive={activeTab === 'recent'}
               onClick={() => setActiveTab('recent')}
             />
-            <TabButton
-              label="This Week"
+            <TabButton 
+              label="Week" 
               count={categorizedTrips.week.length}
               isActive={activeTab === 'week'}
               onClick={() => setActiveTab('week')}
             />
-            <TabButton
-              label="This Month"
+            <TabButton 
+              label="Month" 
               count={categorizedTrips.month.length}
               isActive={activeTab === 'month'}
               onClick={() => setActiveTab('month')}
             />
-            <TabButton
-              label="Older"
+            <TabButton 
+              label="Older" 
               count={categorizedTrips.older.length}
               isActive={activeTab === 'older'}
               onClick={() => setActiveTab('older')}
@@ -154,16 +154,16 @@ const BookedTripsPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {categorizedTrips[activeTab].map((trip, index) => (
             <TripCard key={index} trip={trip} />
           ))}
         </div>
 
         {categorizedTrips[activeTab].length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900">No trips found</h3>
-            <p className="mt-2 text-sm text-gray-500">
+          <div className="text-center py-8 sm:py-12">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900">No trips found</h3>
+            <p className="mt-2 text-xs sm:text-sm text-gray-500">
               You don't have any booked trips in this time period.
             </p>
           </div>
@@ -172,5 +172,4 @@ const BookedTripsPage = () => {
     </div>
   );
 };
-
 export default BookedTripsPage;
