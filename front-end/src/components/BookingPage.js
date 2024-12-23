@@ -89,8 +89,8 @@ const makePayment = async (e) => {
       throw new Error("Failed to initialize payment system");
     }
 
+    // Remove userId from bookingData
     const bookingData = {
-      userId: user._id,
       tickets: formData.tickets,
       paymentType: formData.paymentType,
       totalPrice: totalPrice,
@@ -104,19 +104,18 @@ const makePayment = async (e) => {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
-        "Accept": "application/json"
       },
       credentials: 'include',
       body: JSON.stringify(bookingData),
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json();
       throw new Error(errorData.message || `Payment failed with status ${response.status}`);
     }
 
     const data = await response.json();
-
+    
     if (data.paymentUrl) {
       window.location.href = data.paymentUrl;
     } else {
@@ -129,7 +128,6 @@ const makePayment = async (e) => {
     setLoading(false);
   }
 };
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
