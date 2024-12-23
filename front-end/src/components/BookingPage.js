@@ -1,24 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
-import { MapPin, Calendar, Clock, CreditCard, Users, ArrowLeft, Sparkles } from 'lucide-react';
-import { format } from 'date-fns';
+import { MapPin, Sparkles } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { selectCurrentToken, selectCurrentUser } from '../features/auth/authSlice'; // Added selectCurrentUser
-import '../App.css';
+import { selectCurrentToken, selectCurrentUser } from '../features/auth/authSlice';
+
+const STRIPE_PUBLIC_KEY = "pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC";
+const API_URL = process.env.REACT_APP_API_URL || 'https://your-api-domain.com';
 
 const BookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const tripDetails = location.state;
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const token = useSelector(selectCurrentToken);
-  const user = useSelector(selectCurrentUser); // Get user data from Redux store
+  const user = useSelector(selectCurrentUser);
 
   const [formData, setFormData] = useState({
     tickets: 1,
     paymentType: "full",
   });
+
+  useEffect(() => {
+    if (!user || !token) {
+      navigate('/login', { state: { from: location } });
+    }
+  }, [user, token, navigate, location]);
 
   if (!tripDetails) {
     return (
@@ -61,55 +69,64 @@ const BookingPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
   const makePayment = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       if (!user?._id) {
-        throw new Error("User not authenticated");
+        throw new Error("Please log in to continue with booking");
       }
 
-      const stripe = await loadStripe("pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC");
+      const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
+      
+      if (!stripe) {
+        throw new Error("Failed to initialize payment system");
+      }
 
-      const response = await fetch("http://localhost:3500/api/booking", {
+      const bookingData = {
+        userId: user._id,
+        tickets: formData.tickets,
+        paymentType: formData.paymentType,
+        totalPrice: totalPrice,
+        tripId: tripDetails._id,
+        destination: tripDetails.destination,
+        userEmail: user.email
+      };
+
+      const response = await fetch(`${API_URL}/api/booking`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({
-          userId: user._id, // Add user ID to request
-          tickets: formData.tickets,
-          paymentType: formData.paymentType,
-          totalPrice: totalPrice,
-          tripId: tripDetails._id,
-          destination: tripDetails.destination
-        }),
+        body: JSON.stringify(bookingData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Payment failed");
+        throw new Error(data.message || "Payment failed");
       }
 
-      const { paymentUrl } = await response.json();
-      if (paymentUrl) {
-        window.location.href = paymentUrl;
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
       } else {
-        throw new Error("Payment URL not found");
+        throw new Error("Invalid payment response");
       }
     } catch (error) {
       console.error("Error during payment:", error);
-      // Add user feedback
-      alert(error.message || "Payment failed. Please try again.");
+      setError(error.message || "Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
@@ -121,6 +138,12 @@ const BookingPage = () => {
           <p className="text-gray-600">Origin: {tripDetails.origin}</p>
           <p className="text-gray-600">Start Date: {tripDetails.startDate}</p>
         </div>
+
+        {error && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={makePayment} className="bg-gray-50 p-4 rounded-lg shadow-md">
           <div className="grid grid-cols-1 gap-4">
