@@ -1,5 +1,6 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET);  // Add Stripe import
-const BookedTrip = require('../models/BookedTrip');
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
+const BookedTrip = require('../models/BookedTrip');  // Import the BookedTrip model
+
 const bookingController = {
   createBookingSession: async (req, res) => {
     const { tickets, paymentType, totalPrice, tripId, destination } = req.body;
@@ -25,9 +26,15 @@ const bookingController = {
         cancel_url: "http://localhost:3000/cancel",
       });
 
+      // Ensure the user ID is accessed correctly from the decoded JWT
+      const userId = req.user.UserInfo ? req.user.UserInfo.id : null;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID not found in the request" });
+      }
+
       // Create pending booking
       const booking = new BookedTrip({
-        userId: req.user.UserInfo.id,  // Ensure correct userId is passed
+        userId,  // Correct userId here
         tripId,
         tickets,
         totalPrice,
