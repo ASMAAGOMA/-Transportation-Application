@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { MapPin, Calendar, Clock, CreditCard, Users, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
+import { useSelector } from 'react-redux';
+import { selectCurrentToken } from '../features/auth/authSlice';
 
-// Initialize Stripe outside the component with the public key
 const stripePromise = loadStripe("pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC");
 
 const BookingPage = () => {
@@ -12,11 +13,35 @@ const BookingPage = () => {
   const location = useLocation();
   const tripDetails = location.state;
   const [loading, setLoading] = useState(false);
+  const token = useSelector(selectCurrentToken);
 
   const [formData, setFormData] = useState({
     tickets: 1,
     paymentType: "full",
   });
+
+  if (!tripDetails) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <MapPin className="w-24 h-24 text-indigo-300 mx-auto mb-6" />
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            No Trip Selected
+          </h2>
+          <p className="text-gray-600 mb-8">
+            Please select a trip to proceed with booking.
+          </p>
+          <button 
+            onClick={() => navigate("/")}
+            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-flex items-center gap-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Browse Trips
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const totalPrice = formData.paymentType === "full"
     ? Math.round(tripDetails?.price * formData.tickets)
@@ -30,6 +55,12 @@ const BookingPage = () => {
   const makePayment = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
+    if (!token) {
+      alert("Please login to make a booking");
+      navigate('/login');
+      return;
+    }
     
     try {
       const stripe = await stripePromise;
@@ -49,11 +80,15 @@ const BookingPage = () => {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(payload),
-        credentials: 'include' // Include cookies if you're using them
+        credentials: 'include'
       });
+
+      if (response.status === 403) {
+        throw new Error("Authentication failed. Please login again.");
+      }
   
       if (!response.ok) {
         const errorData = await response.json();
@@ -74,7 +109,11 @@ const BookingPage = () => {
       
     } catch (error) {
       console.error("Error during payment:", error);
-      alert("Payment failed: " + error.message);
+      if (error.message.includes("Authentication failed")) {
+        navigate('/login');
+      } else {
+        alert("Payment failed: " + error.message);
+      }
     } finally {
       setLoading(false);
     }
