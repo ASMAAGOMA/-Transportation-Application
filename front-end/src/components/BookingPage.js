@@ -52,73 +52,43 @@ const BookingPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const makePayment = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
+  const makePayment = async () => {
     if (!token) {
-      alert("Please login to make a booking");
-      navigate('/login');
+      console.error("No user token available");
       return;
     }
-    
-    try {
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error("Stripe failed to initialize");
-      }
-      
-      const payload = {
-        tickets: formData.tickets,
-        paymentType: formData.paymentType,
-        totalPrice: totalPrice,
-        tripId: tripDetails.id,
-        destination: tripDetails.destination
-      };
   
-      const response = await fetch("http://localhost:3500/api/booking", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+    try {
+      setLoading(true);
+  
+      const response = await fetch('http://localhost:3500/api/booking', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
         },
-        body: JSON.stringify(payload),
-        credentials: 'include'
+        body: JSON.stringify({
+          tickets: formData.tickets,
+          paymentType: formData.paymentType,
+          totalPrice: totalPrice,
+          tripId: tripDetails._id,
+          destination: tripDetails.destination,
+        }),
       });
-
-      if (response.status === 403) {
-        throw new Error("Authentication failed. Please login again.");
-      }
   
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to process payment");
+        throw new Error(`Error: ${response.statusText}`);
       }
-      
-      const { paymentUrl } = await response.json();
-      if (paymentUrl) {
-        localStorage.setItem('pendingBooking', JSON.stringify({
-          ...payload,
-          tripDetails,
-          bookingDate: new Date().toISOString()
-        }));
-        window.location.href = paymentUrl;
-      } else {
-        throw new Error("Payment URL not found");
-      }
-      
+  
+      const data = await response.json();
+      navigate('/success'); // Redirect to success page
     } catch (error) {
-      console.error("Error during payment:", error);
-      if (error.message.includes("Authentication failed")) {
-        navigate('/login');
-      } else {
-        alert("Payment failed: " + error.message);
-      }
+      console.error('Error during payment:', error);
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
