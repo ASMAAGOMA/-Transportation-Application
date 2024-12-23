@@ -3,9 +3,40 @@ import { format, subDays, subMonths, isWithin } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 
 const BookedTripsPage = () => {
-  // This would come from your API/backend in a real implementation
-  const [bookedTrips, setBookedTrips] = useState([]);
-  const [activeTab, setActiveTab] = useState('recent');
+    const [bookedTrips, setBookedTrips] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('recent');
+    const token = useSelector(selectCurrentToken);
+  
+    useEffect(() => {
+      const fetchBookedTrips = async () => {
+        try {
+          const response = await fetch('http://localhost:3500/api/booked-trips', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch booked trips');
+          }
+          
+          const data = await response.json();
+          setBookedTrips(data);
+        } catch (err) {
+          setError(err.message);
+          console.error('Error fetching booked trips:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      if (token) {
+        fetchBookedTrips();
+      }
+    }, [token]);
 
   const categorizeTrips = (trips) => {
     const now = new Date();

@@ -80,13 +80,30 @@ const bookingController = {
   getBookedTrips: async (req, res) => {
     try {
       const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
       const trips = await BookedTrip.find({ 
         userId, 
         paymentStatus: 'completed' 
       }).populate('tripId');
       
-      res.json(trips);
+      // Transform the data to match the format expected by the frontend
+      const transformedTrips = trips.map(trip => ({
+        destination: trip.tripId.destination,
+        origin: trip.tripId.origin,
+        startDate: trip.tripId.startDate,
+        duration: trip.tripId.duration,
+        image: trip.tripId.image,
+        tickets: trip.tickets,
+        totalPaid: trip.totalPrice,
+        bookingDate: trip.bookingDate
+      }));
+  
+      res.json(transformedTrips);
     } catch (error) {
+      console.error('Error in getBookedTrips:', error);
       res.status(500).json({ message: error.message });
     }
   }

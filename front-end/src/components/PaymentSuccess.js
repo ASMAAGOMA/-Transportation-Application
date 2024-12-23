@@ -16,36 +16,46 @@ const PaymentSuccess = () => {
     const bookingId = searchParams.get('booking_id');
 
     const verifyPayment = async () => {
-      try {
-        const response = await fetch('http://localhost:3500/api/booking/verify-payment', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ sessionId, bookingId })
-        });
-
-        if (!response.ok) {
-          throw new Error('Payment verification failed');
+        try {
+          const response = await fetch('http://localhost:3500/api/booking/verify-payment', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ sessionId, bookingId })
+          });
+  
+          if (!response.ok) {
+            throw new Error('Payment verification failed');
+          }
+  
+          const result = await response.json();
+          
+          if (result.success) {
+            setStatus('success');
+            // Add a longer delay before redirect to ensure the booking is processed
+            setTimeout(() => {
+              navigate('/booked-trips', { 
+                replace: true,
+                state: { refresh: true } // Add state to trigger refresh
+              });
+            }, 3000);
+          } else {
+            throw new Error('Payment verification failed');
+          }
+        } catch (error) {
+          console.error('Verification error:', error);
+          setStatus('error');
         }
-
-        setStatus('success');
-        setTimeout(() => {
-          navigate('/booked-trips', { replace: true });
-        }, 2000);
-      } catch (error) {
-        console.error('Verification error:', error);
+      };
+  
+      if (sessionId && bookingId) {
+        verifyPayment();
+      } else {
         setStatus('error');
       }
-    };
-
-    if (sessionId && bookingId) {
-      verifyPayment();
-    } else {
-      setStatus('error');
-    }
-  }, [location, navigate, token]);
+    }, [location, navigate, token, sessionId, bookingId]);
 
   const renderContent = () => {
     switch (status) {
