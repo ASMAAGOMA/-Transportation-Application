@@ -1,3 +1,4 @@
+// verifyJWT.js
 const jwt = require('jsonwebtoken');
 
 const verifyJWT = (req, res, next) => {
@@ -16,12 +17,15 @@ const verifyJWT = (req, res, next) => {
             return res.status(403).json({ message: 'Forbidden' });
         }
         
-        // Log the decoded payload to verify its structure
         console.log('Decoded payload:', decoded);
         
-        // Assign the whole UserInfo object to req.user
-        req.user = decoded.UserInfo;  // Now req.user has the whole UserInfo object
-        req.roles = decoded.UserInfo.roles;  // Still preserving roles separately if needed
+        // Map the id to _id for consistency
+        req.user = {
+            _id: decoded.UserInfo.id,
+            email: decoded.UserInfo.email,
+            roles: decoded.UserInfo.roles
+        };
+        
         next();
     });
 };
