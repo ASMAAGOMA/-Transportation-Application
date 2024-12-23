@@ -14,6 +14,7 @@ import { selectCurrentToken } from './features/auth/authSlice';
 import { useRefreshMutation } from './features/auth/authApiSlice';
 import BookedTripsPage from './components/BookedTripsPage';
 import PaymentSuccess from './components/PaymentSuccess';
+import ErrorBoundary from './components/ErrorBoundary'
 
 import './index.css';
 import './globals.css';
@@ -39,6 +40,7 @@ function App() {
   }, [token, refresh]);
 
   return (
+    <ErrorBoundary>
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
@@ -59,6 +61,7 @@ function App() {
         </Route>
       </Route>
     </Routes>
+    </ErrorBoundary>
   );
 }
 
