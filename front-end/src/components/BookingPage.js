@@ -8,39 +8,16 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const tripDetails = location.state;
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     tickets: 1,
     paymentType: "full",
   });
-  const [loading, setLoading] = useState(false);
 
   const totalPrice = formData.paymentType === "full"
     ? Math.round(tripDetails?.price * formData.tickets)
     : Math.round((tripDetails?.price * formData.tickets) / 2);
-
-  if (!tripDetails) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-100 py-12 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <MapPin className="w-24 h-24 text-indigo-300 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            No Trip Selected
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Please select a trip to proceed with booking.
-          </p>
-          <button 
-            onClick={() => navigate("/")}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-flex items-center gap-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Browse Trips
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,11 +41,16 @@ const BookingPage = () => {
   
       const response = await fetch("http://localhost:3500/api/booking", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}` // Add auth token
+        },
         body: JSON.stringify(payload),
       });
   
-      if (!response.ok) throw new Error("Failed to process payment");
+      if (!response.ok) {
+        throw new Error("Failed to process payment");
+      }
       
       const { paymentUrl } = await response.json();
       if (paymentUrl) {
@@ -79,11 +61,13 @@ const BookingPage = () => {
           bookingDate: new Date().toISOString()
         }));
         window.location.href = paymentUrl;
+      } else {
+        throw new Error("Payment URL not found");
       }
-      else console.error("Payment URL not found");
       
     } catch (error) {
-      console.error("Error during payment:", error.message);
+      console.error("Error during payment:", error);
+      alert("Payment failed: " + error.message);
     } finally {
       setLoading(false);
     }

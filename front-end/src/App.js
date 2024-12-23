@@ -18,9 +18,6 @@ import PaymentSuccess from './components/PaymentSuccess';
 import './index.css';
 import './globals.css';
 
-import {loadStripe} from '@stripe/stripe-js';
-const stripe = await loadStripe('pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC');
-
 function App() {
   const token = useSelector(selectCurrentToken);
   const [refresh] = useRefreshMutation();
