@@ -31,7 +31,13 @@ const getPendingTrips = async (req, res) => {
 
 const addPendingTrip = async (req, res) => {
     try {
-        if (!req.user) {
+        // Add detailed logging to debug the issue
+        console.log('Request user object:', req.user);
+        console.log('Request body:', req.body);
+
+        // Check if user exists in request
+        if (!req.user || !req.user._id) {
+            console.log('User authentication failed:', req.user);
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
@@ -47,8 +53,10 @@ const addPendingTrip = async (req, res) => {
             return res.status(400).json({ message: 'Invalid Trip ID format' });
         }
 
-        const user = await User.findById(req.user);
+        // Find user by ID from JWT token
+        const user = await User.findById(req.user._id);
         if (!user) {
+            console.log('User not found in database:', req.user._id);
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -62,17 +70,35 @@ const addPendingTrip = async (req, res) => {
             return res.json(user.pendingTrips);
         }
 
+        // Initialize pendingTrips array if it doesn't exist
+        if (!user.pendingTrips) {
+            user.pendingTrips = [];
+        }
+
         // Add trip to user's pending trips
-        user.pendingTrips = user.pendingTrips || [];
         user.pendingTrips.push(tripId);
-        await user.save();
+        
+        // Save with error handling
+        try {
+            await user.save();
+        } catch (saveError) {
+            console.error('Error saving user:', saveError);
+            return res.status(500).json({ 
+                message: 'Error saving pending trip',
+                error: saveError.message 
+            });
+        }
 
         // Return the updated pending trips list
-        const updatedUser = await User.findById(req.user).populate('pendingTrips');
+        const updatedUser = await User.findById(req.user._id).populate('pendingTrips');
         res.json(updatedUser.pendingTrips);
     } catch (err) {
         console.error('Error in addPendingTrip:', err);
-        res.status(500).json({ message: 'Server Error', error: err.message });
+        res.status(500).json({ 
+            message: 'Server Error', 
+            error: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
     }
 }
 
