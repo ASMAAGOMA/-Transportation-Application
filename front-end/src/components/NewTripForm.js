@@ -19,8 +19,8 @@ const NewTripForm = () => {
     startDate: '',
     duration: '',
     image: null,
-    description: '',  // Added to match schema
-    maxPassengers: 4  // Added default value
+    description: '',
+    maxPassengers: 4
   });
 
   const handleInputChange = (e) => {
@@ -43,22 +43,19 @@ const NewTripForm = () => {
     
     const formData = new FormData();
     
-    // Calculate endDate based on startDate and duration
     const startDateTime = new Date(newTrip.startDate);
     const endDateTime = new Date(startDateTime.getTime() + (parseFloat(newTrip.duration) * 60 * 60 * 1000));
     
-    // Append all fields to formData
     formData.append('destination', newTrip.destination);
     formData.append('origin', newTrip.origin);
     formData.append('price', newTrip.price);
     formData.append('startDate', startDateTime.toISOString());
-    formData.append('endDate', endDateTime.toISOString());  // Add calculated endDate
+    formData.append('endDate', endDateTime.toISOString());
     formData.append('duration', newTrip.duration);
     formData.append('description', newTrip.description || '');
     formData.append('maxPassengers', newTrip.maxPassengers);
-    formData.append('status', 'available');  // Set default status
+    formData.append('status', 'available');
     
-    // Only append image if it exists
     if (newTrip.image) {
       formData.append('image', newTrip.image);
     }
@@ -107,7 +104,7 @@ const NewTripForm = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
                 <input

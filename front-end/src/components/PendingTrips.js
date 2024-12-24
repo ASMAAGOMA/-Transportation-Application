@@ -5,7 +5,7 @@ import { BookmarkX, MapPin, Calendar, Sparkles } from 'lucide-react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import { selectCurrentUser } from '../features/auth/authSlice';
 import RideCard from './RideCard';
-import TripModal from './TripModal'; // Make sure to import the TripModal
+import TripModal from './TripModal'; // Ensure this is imported correctly
 
 const PendingTrips = () => {
     const [selectedTrip, setSelectedTrip] = useState(null);
@@ -87,13 +87,12 @@ const PendingTrips = () => {
                             Start exploring and add some exciting destinations to your pending list!
                         </p>
                         <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
-                                onClick={() => navigate("/")}
-                        >
+                                onClick={() => navigate("/")}>
                             Explore Trips
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                         {pendingTrips.map(trip => (
                             <div 
                                 key={trip._id} 

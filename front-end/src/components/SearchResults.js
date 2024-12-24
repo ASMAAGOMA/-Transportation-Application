@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import RideCard from './RideCard';
 import TripModal from './TripModal';
 import NewTripForm from './NewTripForm';
-import { useState, useEffect } from 'react';
 
 const SearchResults = ({ searchCriteria }) => {
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -24,7 +23,7 @@ const SearchResults = ({ searchCriteria }) => {
     if (!trips?.ids) return [];
 
     const allTrips = trips.ids.map(id => trips.entities[id]);
-    
+
     if (!searchCriteria) {
       return allTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     }
@@ -40,11 +39,11 @@ const SearchResults = ({ searchCriteria }) => {
         const tripStart = new Date(trip.startDate);
         const searchStart = searchCriteria.startDate ? new Date(searchCriteria.startDate) : null;
         const searchEnd = searchCriteria.endDate ? new Date(searchCriteria.endDate) : null;
-        
+
         if (searchStart) searchStart.setHours(0, 0, 0, 0);
         if (searchEnd) searchEnd.setHours(23, 59, 59, 999);
         tripStart.setHours(0, 0, 0, 0);
-        
+
         const matchStartDate = !searchStart || tripStart >= searchStart;
         const matchEndDate = !searchEnd || tripStart <= searchEnd;
 
@@ -72,7 +71,7 @@ const SearchResults = ({ searchCriteria }) => {
   const filteredTrips = getFilteredTrips();
 
   return (
-    <div className="px-8 space-y-8">
+    <div className="px-6 md:px-8 space-y-8">
       {/* Add the NewTripForm at the top */}
       <NewTripForm />
       
@@ -86,7 +85,7 @@ const SearchResults = ({ searchCriteria }) => {
       {filteredTrips.length === 0 ? (
         <div className="text-center text-gray-600">No trips found matching your criteria.</div>
       ) : (
-        <div className={`grid grid-cols-2 gap-6 transition-opacity duration-300 ${isFiltering ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 transition-opacity duration-300 ${isFiltering ? 'opacity-0' : 'opacity-100'}`}>
           {filteredTrips.map(trip => (
             <RideCard
               key={trip.id}

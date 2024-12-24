@@ -10,9 +10,9 @@ const DestinationCard = ({ city, price, image }) => (
     />
     
     {/* Overlay with responsive padding and text sizes */}
-    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/60 via-black/40 to-transparent text-white">
-      <h3 className="font-bold text-base sm:text-lg md:text-xl mb-0.5 sm:mb-1">{city}</h3>
-      <p className="text-sm sm:text-base text-gray-200">From ${price}</p>
+    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-5 bg-gradient-to-t from-black/60 via-black/40 to-transparent text-white">
+      <h3 className="font-bold text-sm sm:text-lg md:text-xl mb-0.5 sm:mb-1">{city}</h3>
+      <p className="text-xs sm:text-sm md:text-base text-gray-200">From ${price}</p>
     </div>
   </div>
 );

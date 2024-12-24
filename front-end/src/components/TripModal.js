@@ -39,10 +39,7 @@ const TripModal = ({ trip, onClose, onBook }) => {
         ));
       } else {
         result = await addPending(trip._id).unwrap();
-        dispatch(updateUserPendingTrips([
-          ...(user.pendingTrips || []), 
-          trip._id
-        ]));
+        dispatch(updateUserPendingTrips([...(user.pendingTrips || []), trip._id]));
         
         // Show temporary "Added to Pending" message
         setIsPendingAdded(true);
@@ -53,6 +50,7 @@ const TripModal = ({ trip, onClose, onBook }) => {
       alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
     }
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar relative">
@@ -105,7 +103,7 @@ const TripModal = ({ trip, onClose, onBook }) => {
             className="w-full h-64 object-cover rounded-lg"
           />
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-indigo-600" />
               <div>

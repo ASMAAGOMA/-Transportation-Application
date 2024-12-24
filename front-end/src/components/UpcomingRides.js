@@ -46,12 +46,12 @@ const UpcomingRides = () => {
   return (
     <section className="space-y-8">
       <SearchForm onSearch={setSearchCriteria} />
-      
-      <div className="px-8 py-12">
+
+      <div className="px-4 sm:px-8 py-12">
         {filteredTrips.length === 0 ? (
           <div className="text-center text-gray-600">No trips found matching your criteria.</div>
         ) : (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
             {filteredTrips.map(trip => (
               <RideCard
                 key={trip.id}

@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+/*for laptops*/
+.container {
+  display: flex;
+  padding: 20px;
+}
+
+/* for tablets */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* ترتيب العناصر عموديًا */
+    padding: 10px;
+  }
+}
+
+/*for mobiles*/
+@media (max-width: 480px) {
+  .container {
+    padding: 5px;
+  }
+}
+

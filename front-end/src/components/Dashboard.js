@@ -14,7 +14,7 @@ const Dashboard = () => {
       <HeroSection>
         <SearchForm onSearch={setSearchCriteria} />
       </HeroSection>
-      <div className="mt-20">
+      <div className="mt-12 sm:mt-16 md:mt-20 lg:mt-24">
         <SearchResults searchCriteria={searchCriteria} />
       </div>
     </div>

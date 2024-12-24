@@ -11,8 +11,8 @@ const Header = () => {
   const location = useLocation();
 
   return (
-    <header className="p-4 flex justify-between items-center bg-white shadow-sm">
-      <nav className="flex gap-6">
+    <header className="p-4 sm:p-6 flex justify-between items-center bg-white shadow-sm">
+      <nav className="flex gap-4 sm:gap-6">
         <NavLink 
           to="/booked-trips" 
           active={location.pathname === '/booked-trips'}
@@ -38,17 +38,20 @@ const Header = () => {
           Profile
         </NavLink>
       </nav>
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-3 sm:gap-4 items-center">
         <Link to="/login">
           <Button variant="secondary">Login</Button>
         </Link>
         <Link to="/signup">
           <Button>Sign up</Button>
         </Link>
-        <FontAwesomeIcon icon={faGear} className="w-6 h-6 text-gray-900" />
-        <FontAwesomeIcon icon={faBell} className="w-6 h-6 text-gray-900" />
+        <div className="flex gap-3 sm:gap-4">
+          <FontAwesomeIcon icon={faGear} className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900" />
+          <FontAwesomeIcon icon={faBell} className="w-5 h-5 sm:w-6 sm:h-6 text-gray-900" />
+        </div>
       </div>
     </header>
   );
 };
+
 export default Header;

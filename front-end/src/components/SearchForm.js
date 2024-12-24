@@ -22,9 +22,9 @@ const SearchForm = ({ onSearch }) => {
   };
 
   return (
-    <div className="bg-gray-300/95 p-8 rounded-lg w-[900px]">
-      <div className="grid grid-cols-4 gap-6 items-center">
-        <div className="border-r border-gray-400">
+    <div className="bg-gray-300/95 p-6 md:p-8 rounded-lg w-full md:w-[900px] mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+        <div className="border-b md:border-r border-gray-400 pb-4 md:pb-0">
           <label className="text-sm text-gray-600 mb-1 block">Explore</label>
           <input 
             type="text" 
@@ -35,7 +35,7 @@ const SearchForm = ({ onSearch }) => {
             className="w-full bg-gray-300 text-gray-900 placeholder-gray-900 font-medium text-lg focus:outline-none" 
           />
         </div>
-        <div className="border-r border-gray-400">
+        <div className="border-b md:border-r border-gray-400 pb-4 md:pb-0">
           <label className="text-sm text-gray-600 mb-1 block">To</label>
           <input 
             type="text" 
@@ -46,7 +46,7 @@ const SearchForm = ({ onSearch }) => {
             className="w-full bg-gray-300 text-gray-900 placeholder-gray-900 font-medium text-lg focus:outline-none" 
           />
         </div>
-        <div className="border-r border-gray-400">
+        <div className="border-b md:border-r border-gray-400 pb-4 md:pb-0">
           <label className="text-sm text-gray-600 mb-1 block">Start</label>
           <input 
             type="date" 
@@ -56,8 +56,8 @@ const SearchForm = ({ onSearch }) => {
             className="w-full bg-gray-300 text-gray-900 placeholder-gray-900 font-medium text-lg focus:outline-none" 
           />
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex-grow">
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="w-full md:w-auto">
             <label className="text-sm text-gray-600 mb-1 block">End</label>
             <input 
               type="date" 
@@ -68,7 +68,7 @@ const SearchForm = ({ onSearch }) => {
             />
           </div>
           <button 
-            className="bg-red-500 hover:bg-red-600 p-4 rounded-lg transition-colors duration-200 ml-4 w-14 h-14 flex items-center justify-center"
+            className="bg-red-500 hover:bg-red-600 p-4 rounded-lg transition-colors duration-200 mt-4 md:mt-0 md:ml-4 w-14 h-14 flex items-center justify-center"
             aria-label="Search"
             onClick={handleSearch}
           >

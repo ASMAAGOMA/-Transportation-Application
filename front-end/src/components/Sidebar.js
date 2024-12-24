@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { useScrollToElement } from '../hooks/useScrollToElement'; // Add this import
 import { 
   faCalendarDays, 
   faCar, 
@@ -14,7 +13,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   return (
-    <aside className="w-20 bg-indigo-100 flex flex-col items-center py-4 fixed h-full">
+    <aside className="w-20 bg-indigo-100 flex flex-col items-center py-4 fixed top-0 left-0 h-full z-50">
       <div className="mb-4">
         <Logo image="/images/file.png" altText="Custom Logo" />
       </div>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const NavLink = ({ to, children, active }) => (
   <Link 
     to={to}
-    className={`relative group ${
+    className={`relative group text-sm sm:text-base md:text-lg ${
       active ? 'text-indigo-600 font-medium' : 'text-gray-500'
     } hover:text-indigo-600 transition-colors duration-200`}
   >

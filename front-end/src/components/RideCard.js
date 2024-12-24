@@ -55,10 +55,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
         ));
       } else {
         await addPending(trip._id).unwrap();
-        dispatch(updateUserPendingTrips([
-          ...(user.pendingTrips || []), 
-          trip._id
-        ]));
+        dispatch(updateUserPendingTrips([...(user.pendingTrips || []), trip._id]));
         setIsPendingAdded(true);
         setTimeout(() => setIsPendingAdded(false), 2000);
       }
@@ -168,7 +165,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
         <img 
           src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
           alt={trip.destination}
-          className="w-full h-48 object-cover"
+          className="w-full h-48 object-cover sm:h-64 md:h-80 lg:h-96"
         />
         
         {/* Admin actions */}

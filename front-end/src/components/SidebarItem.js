@@ -2,6 +2,7 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+import '../App.css';
 
 const SidebarItem = ({ icon, label, active, to, onClick }) => (
   <Link to={to} onClick={onClick} className="block">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../features/auth/authSlice';
+import '../App.css';
 
 const Profile = () => {
   const user = useSelector(selectCurrentUser);
@@ -28,7 +29,7 @@ const Profile = () => {
           {/* Profile Information */}
           <div className="flex-grow space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Full Name
