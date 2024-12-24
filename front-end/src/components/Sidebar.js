@@ -20,10 +20,10 @@ const Sidebar = () => {
       </div>
       <nav className="flex flex-col gap-4">
         <SidebarItem 
-          to="/booking" 
+          to="/booked-trips" 
           icon={faCalendarDays} 
           label="Booking" 
-          active={location.pathname === '/booking'} 
+          active={location.pathname === '/booked-trips'} 
         />
         <SidebarItem 
           to="/" 

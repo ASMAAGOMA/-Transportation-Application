@@ -39,7 +39,10 @@ const RideCard = ({ trip, onClick, onBook }) => {
     try {
       let result;
       if (isPendingTrip) {
+        console.log('Adding pending trip with ID:', trip._id);
+        console.log('Current user:', user);
         result = await removePending(trip._id).unwrap();
+        console.log('Add pending result:', result);
         dispatch(updateUserPendingTrips(
           user.pendingTrips.filter(id => id !== trip._id)
         ));
@@ -56,8 +59,9 @@ const RideCard = ({ trip, onClick, onBook }) => {
       }
     } catch (err) {
       console.error('Failed to update pending trip:', err);
+      console.log('Error details:', err.data);
       alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
-    }
+  }
   };
 
   return (

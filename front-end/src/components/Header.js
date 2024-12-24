@@ -14,8 +14,8 @@ const Header = () => {
     <header className="p-4 flex justify-between items-center bg-white shadow-sm">
       <nav className="flex gap-6">
         <NavLink 
-          to="/booking" 
-          active={location.pathname === '/booking'}
+          to="/booked-trips" 
+          active={location.pathname === '/booked-trips'}
         >
           Booking
         </NavLink>

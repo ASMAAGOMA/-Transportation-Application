@@ -31,24 +31,29 @@ const getPendingTrips = async (req, res) => {
 
 const addPendingTrip = async (req, res) => {
     try {
-        if (!req.user) {
+        console.log('Request user object:', req.user);
+        console.log('Request body:', req.body);
+
+        // Updated check for user authentication
+        if (!req.user || !req.user._id) {
+            console.log('User authentication failed:', req.user);
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
         const { tripId } = req.body;
         
-        // Validate tripId
         if (!tripId) {
             return res.status(400).json({ message: 'Trip ID is required' });
         }
 
-        // Add MongoDB ObjectId validation
         if (!isValidObjectId(tripId)) {
             return res.status(400).json({ message: 'Invalid Trip ID format' });
         }
 
-        const user = await User.findById(req.user);
+        // Using _id from the updated user object
+        const user = await User.findById(req.user._id);
         if (!user) {
+            console.log('User not found in database:', req.user._id);
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -57,25 +62,29 @@ const addPendingTrip = async (req, res) => {
             return res.status(404).json({ message: 'Trip not found' });
         }
 
+        // Initialize pendingTrips if needed
+        if (!user.pendingTrips) {
+            user.pendingTrips = [];
+        }
+
         // Check if trip is already in pending trips
-        if (user.pendingTrips && user.pendingTrips.includes(tripId)) {
+        if (user.pendingTrips.includes(tripId)) {
             return res.json(user.pendingTrips);
         }
 
-        // Add trip to user's pending trips
-        user.pendingTrips = user.pendingTrips || [];
         user.pendingTrips.push(tripId);
         await user.save();
 
-        // Return the updated pending trips list
-        const updatedUser = await User.findById(req.user).populate('pendingTrips');
+        const updatedUser = await User.findById(req.user._id).populate('pendingTrips');
         res.json(updatedUser.pendingTrips);
     } catch (err) {
         console.error('Error in addPendingTrip:', err);
-        res.status(500).json({ message: 'Server Error', error: err.message });
+        res.status(500).json({ 
+            message: 'Server Error', 
+            error: err.message 
+        });
     }
-}
-
+};
 const removePendingTrip = async (req, res) => {
     try {
         if (!req.user) {

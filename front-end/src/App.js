@@ -12,12 +12,12 @@ import BookingPage from './components/BookingPage';
 import PendingTrips from './components/PendingTrips';
 import { selectCurrentToken } from './features/auth/authSlice';
 import { useRefreshMutation } from './features/auth/authApiSlice';
+import BookedTripsPage from './components/BookedTripsPage';
+import PaymentSuccess from './components/PaymentSuccess';
+import ErrorBoundary from './components/ErrorBoundary'
 
 import './index.css';
 import './globals.css';
-
-import {loadStripe} from '@stripe/stripe-js';
-const stripe = await loadStripe('pk_test_51QW3x1HzLvE2BAXyeFXNvnWXKCevhEShDCloQgsmGCy6quNinNw8iAdmEFUzligLxlcOL4J04op5l9l3C0LDOUY000vB7o4VPC');
 
 function App() {
   const token = useSelector(selectCurrentToken);
@@ -40,6 +40,7 @@ function App() {
   }, [token, refresh]);
 
   return (
+    <ErrorBoundary>
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
@@ -52,12 +53,15 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/pending" element={<PendingTrips />} />
-            <Route path="/booking" element={<BookingPage />}></Route>
+            <Route path="/booking" element={<BookingPage />} />
+            <Route path="booked-trips" element={<BookedTripsPage />} />
+            <Route path="success" element={<PaymentSuccess />} />
             {/* Add other protected routes here */}
           </Route>
         </Route>
       </Route>
     </Routes>
+    </ErrorBoundary>
   );
 }
 
