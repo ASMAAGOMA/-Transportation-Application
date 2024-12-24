@@ -2,7 +2,9 @@ import React from 'react';
 import { useGetTripsQuery } from '../features/trips/tripsApiSlice';
 import RideCard from './RideCard';
 import TripModal from './TripModal';
+import NewTripForm from './NewTripForm';
 import { useState, useEffect } from 'react';
+
 const SearchResults = ({ searchCriteria }) => {
   const [selectedTrip, setSelectedTrip] = useState(null);
   const { data: trips, isLoading, isError, error } = useGetTripsQuery();
@@ -17,6 +19,7 @@ const SearchResults = ({ searchCriteria }) => {
     // Add your booking logic here
     console.log('Booking trip:', trip);
   };
+
   const getFilteredTrips = () => {
     if (!trips?.ids) return [];
 
@@ -38,7 +41,6 @@ const SearchResults = ({ searchCriteria }) => {
         const searchStart = searchCriteria.startDate ? new Date(searchCriteria.startDate) : null;
         const searchEnd = searchCriteria.endDate ? new Date(searchCriteria.endDate) : null;
         
-        // Fix date comparison by setting time to midnight
         if (searchStart) searchStart.setHours(0, 0, 0, 0);
         if (searchEnd) searchEnd.setHours(23, 59, 59, 999);
         tripStart.setHours(0, 0, 0, 0);
@@ -51,7 +53,6 @@ const SearchResults = ({ searchCriteria }) => {
       .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   };
 
-  // Handle filtering animation
   useEffect(() => {
     if (searchCriteria) {
       setIsFiltering(true);
@@ -71,7 +72,10 @@ const SearchResults = ({ searchCriteria }) => {
   const filteredTrips = getFilteredTrips();
 
   return (
-    <div className="px-8">
+    <div className="px-8 space-y-8">
+      {/* Add the NewTripForm at the top */}
+      <NewTripForm />
+      
       <TripModal 
         trip={selectedTrip} 
         onClose={() => setSelectedTrip(null)}
