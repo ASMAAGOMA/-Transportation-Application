@@ -1,43 +1,32 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, PlusCircle, Check, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, PlusCircle, Check } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCurrentUser, updateUserPendingTrips } from '../features/auth/authSlice';
-import { useAddPendingTripMutation, useRemovePendingTripMutation} from '../features/auth/authApiSlice';
-import {useUpdateTripMutation, useDeleteTripMutation } from '../features/trips/tripsApiSlice'
+import { useAddPendingTripMutation, useRemovePendingTripMutation } from '../features/auth/authApiSlice';
 
 const RideCard = ({ trip, onClick, onBook }) => {
   const [isPendingAdded, setIsPendingAdded] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTrip, setEditedTrip] = useState(trip);
-  
   const user = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   
   const [addPending] = useAddPendingTripMutation();
   const [removePending] = useRemovePendingTripMutation();
-  const [updateTrip] = useUpdateTripMutation();
-  const [deleteTrip] = useDeleteTripMutation();
-
-  // Define admin emails
-  const adminEmails = ['asmaagadallaah@gmail.com', 'asmaaGad@gmail.com', 'abrargomaa111@gmail.com'];
-  
-  // Check if current user is admin
-  const isAdmin = user && adminEmails.includes(user.email);
 
   const isUpcoming = new Date(trip.startDate) > new Date();
+  const navigate = useNavigate();   //Aisha
+
+  const handleBooking = () => {
+    console.log('Trip data being passed:', trip);
+    navigate('/booking', { state: { ...trip, image: trip.image } }); // pass data 
+  };
 
   const isPendingTrip = useMemo(() => 
     user?.pendingTrips?.includes(trip._id), 
     [user, trip._id]
   );
-
-  const handleBooking = () => {
-    navigate('/booking', { state: { ...trip, image: trip.image } });
-  };
 
   const handlePendingClick = async (e) => {
     e.stopPropagation();
@@ -48,115 +37,36 @@ const RideCard = ({ trip, onClick, onBook }) => {
     }
 
     try {
+      let result;
       if (isPendingTrip) {
-        await removePending(trip._id).unwrap();
+        console.log('Adding pending trip with ID:', trip._id);
+        console.log('Current user:', user);
+        result = await removePending(trip._id).unwrap();
+        console.log('Add pending result:', result);
         dispatch(updateUserPendingTrips(
           user.pendingTrips.filter(id => id !== trip._id)
         ));
       } else {
-        await addPending(trip._id).unwrap();
+        result = await addPending(trip._id).unwrap();
         dispatch(updateUserPendingTrips([
           ...(user.pendingTrips || []), 
           trip._id
         ]));
+        
+        // Show temporary "Added to Pending" message
         setIsPendingAdded(true);
         setTimeout(() => setIsPendingAdded(false), 2000);
       }
     } catch (err) {
       console.error('Failed to update pending trip:', err);
+      console.log('Error details:', err.data);
       alert(`Failed to update pending trip: ${err.data?.message || 'Unknown error'}`);
-    }
-  };
-
-  // Admin functions
-  const handleEdit = (e) => {
-    e.stopPropagation();
-    setIsEditing(true);
-  };
-
-  const handleDelete = async (e) => {
-    e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this trip?')) {
-      try {
-        await deleteTrip(trip._id).unwrap();
-      } catch (err) {
-        console.error('Failed to delete trip:', err);
-        alert(`Failed to delete trip: ${err.data?.message || 'Unknown error'}`);
-      }
-    }
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      await updateTrip({
-        id: trip._id,
-        ...editedTrip
-      }).unwrap();
-      setIsEditing(false);
-    } catch (err) {
-      console.error('Failed to update trip:', err);
-      alert(`Failed to update trip: ${err.data?.message || 'Unknown error'}`);
-    }
-  };
-
-  if (isEditing) {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <input
-            type="text"
-            value={editedTrip.destination}
-            onChange={(e) => setEditedTrip({...editedTrip, destination: e.target.value})}
-            className="w-full p-2 border rounded"
-            placeholder="Destination"
-          />
-          <input
-            type="text"
-            value={editedTrip.origin}
-            onChange={(e) => setEditedTrip({...editedTrip, origin: e.target.value})}
-            className="w-full p-2 border rounded"
-            placeholder="Origin"
-          />
-          <input
-            type="number"
-            value={editedTrip.price}
-            onChange={(e) => setEditedTrip({...editedTrip, price: e.target.value})}
-            className="w-full p-2 border rounded"
-            placeholder="Price"
-          />
-          <input
-            type="datetime-local"
-            value={format(new Date(editedTrip.startDate), "yyyy-MM-dd'T'HH:mm")}
-            onChange={(e) => setEditedTrip({...editedTrip, startDate: e.target.value})}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="number"
-            value={editedTrip.duration}
-            onChange={(e) => setEditedTrip({...editedTrip, duration: e.target.value})}
-            className="w-full p-2 border rounded"
-            placeholder="Duration (hours)"
-          />
-          <div className="flex gap-2">
-            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">
-              Save
-            </button>
-            <button 
-              type="button" 
-              onClick={() => setIsEditing(false)} 
-              className="bg-gray-500 text-white px-4 py-2 rounded"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    );
   }
+  };
 
   return (
     <div className="relative bg-white rounded-lg shadow-md overflow-hidden group">
+      {/* Pending Added Notification */}
       {isPendingAdded && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 z-50">
           <Check className="w-5 h-5" />
@@ -164,32 +74,13 @@ const RideCard = ({ trip, onClick, onBook }) => {
         </div>
       )}
 
+      {/* Position the pending button absolutely within the image container */}
       <div className="relative">
         <img 
           src={trip.image ? `http://localhost:3500/uploads/${trip.image}` : '/images/default-trip.jpg'}
           alt={trip.destination}
           className="w-full h-48 object-cover"
         />
-        
-        {/* Admin actions */}
-        {isAdmin && (
-          <div className="absolute top-2 left-2 flex gap-2">
-            <button
-              onClick={handleEdit}
-              className="rounded-full p-2 bg-white text-blue-600 shadow-lg hover:bg-blue-50"
-              title="Edit trip"
-            >
-              <Edit className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="rounded-full p-2 bg-white text-red-600 shadow-lg hover:bg-red-50"
-              title="Delete trip"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-          </div>
-        )}
         
         {isUpcoming && (
           <div 
@@ -218,6 +109,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
 
       <div onClick={onClick} className="cursor-pointer">
         <div className="p-4">
+          {/* Rest of the card content remains the same */}
           <div className="flex justify-between items-start mb-3">
             <h3 className="text-lg font-semibold">{trip.destination}</h3>
             <span className="text-lg font-bold text-indigo-600">${trip.price}</span>
@@ -240,11 +132,12 @@ const RideCard = ({ trip, onClick, onBook }) => {
         </div>
       </div>
 
+      {/* Book button section */}
       <div className="p-4 pt-0">
         <button
           onClick={(e) => {
             e.stopPropagation();
-            handleBooking();
+            handleBooking(); //to transfer it to booking page
           }}
           className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors"
         >
