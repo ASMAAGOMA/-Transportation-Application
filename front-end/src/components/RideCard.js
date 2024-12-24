@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { Calendar, Clock, MapPin, PlusCircle, Check, Edit, Trash2 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCurrentUser, updateUserPendingTrips } from '../features/auth/authSlice';
-import { useAddPendingTripMutation, useRemovePendingTripMutation, useUpdateTripMutation, useDeleteTripMutation } from '../features/trips/tripsApiSlice';
+import { useAddPendingTripMutation, useRemovePendingTripMutation, useUpdateTripMutation, useDeleteTripMutation } from '../features/auth/authApiSlice';
 
 const RideCard = ({ trip, onClick, onBook }) => {
   const [isPendingAdded, setIsPendingAdded] = useState(false);
