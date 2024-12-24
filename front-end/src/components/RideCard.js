@@ -23,7 +23,7 @@ const RideCard = ({ trip, onClick, onBook }) => {
   const [deleteTrip] = useDeleteTripMutation();
 
   // Define admin emails
-  const adminEmails = ['asmaagadallaah@gmail.com', 'asmaaGad@gmail.com', 'abrargomaa111@gmail.com'];
+  const adminEmails = ['asmaagadallaah@gmail.com', 'asmaaGad@gmail.com', 'abrargomaa111@gmail.com', 'ahmed@gmail.com'];
   
   // Check if current user is admin
   const isAdmin = user && adminEmails.includes(user.email);
