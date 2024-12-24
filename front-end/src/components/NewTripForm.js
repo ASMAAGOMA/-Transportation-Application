@@ -9,7 +9,6 @@ const NewTripForm = () => {
   const user = useSelector(selectCurrentUser);
   const [addNewTrip] = useAddNewTripMutation();
 
-  // Define admin emails
   const adminEmails = ['asmaagadallaah@gmail.com', 'asmaaGad@gmail.com', 'abrargomaa111@gmail.com', 'ahmed@gmail.com'];
   const isAdmin = user && adminEmails.includes(user.email);
 
@@ -19,7 +18,9 @@ const NewTripForm = () => {
     price: '',
     startDate: '',
     duration: '',
-    image: null
+    image: null,
+    description: '',  // Added to match schema
+    maxPassengers: 4  // Added default value
   });
 
   const handleInputChange = (e) => {
@@ -41,9 +42,26 @@ const NewTripForm = () => {
     e.preventDefault();
     
     const formData = new FormData();
-    Object.keys(newTrip).forEach(key => {
-      formData.append(key, newTrip[key]);
-    });
+    
+    // Calculate endDate based on startDate and duration
+    const startDateTime = new Date(newTrip.startDate);
+    const endDateTime = new Date(startDateTime.getTime() + (parseFloat(newTrip.duration) * 60 * 60 * 1000));
+    
+    // Append all fields to formData
+    formData.append('destination', newTrip.destination);
+    formData.append('origin', newTrip.origin);
+    formData.append('price', newTrip.price);
+    formData.append('startDate', startDateTime.toISOString());
+    formData.append('endDate', endDateTime.toISOString());  // Add calculated endDate
+    formData.append('duration', newTrip.duration);
+    formData.append('description', newTrip.description || '');
+    formData.append('maxPassengers', newTrip.maxPassengers);
+    formData.append('status', 'available');  // Set default status
+    
+    // Only append image if it exists
+    if (newTrip.image) {
+      formData.append('image', newTrip.image);
+    }
 
     try {
       await addNewTrip(formData).unwrap();
@@ -53,7 +71,9 @@ const NewTripForm = () => {
         price: '',
         startDate: '',
         duration: '',
-        image: null
+        image: null,
+        description: '',
+        maxPassengers: 4
       });
       setIsFormVisible(false);
     } catch (err) {
@@ -132,7 +152,6 @@ const NewTripForm = () => {
                   value={newTrip.duration}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500"
-                  required
                 />
               </div>
 
@@ -149,6 +168,29 @@ const NewTripForm = () => {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={newTrip.description}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500"
+                  rows="3"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Max Passengers</label>
+                <input
+                  type="number"
+                  name="maxPassengers"
+                  value={newTrip.maxPassengers}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500"
+                  min="1"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
                 <input
                   type="file"
@@ -156,7 +198,6 @@ const NewTripForm = () => {
                   onChange={handleImageChange}
                   className="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500"
                   accept="image/*"
-                  required
                 />
               </div>
             </div>
