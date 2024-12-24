@@ -10,7 +10,7 @@ const NewTripForm = () => {
   const [addNewTrip] = useAddNewTripMutation();
 
   // Define admin emails
-  const adminEmails = ['asmaagadallaah@gmail.com', 'asmaaGad@gmail.com', 'abrargomaa111@gmail.com'];
+  const adminEmails = ['asmaagadallaah@gmail.com', 'asmaaGad@gmail.com', 'abrargomaa111@gmail.com', 'ahmed@gmail.com'];
   const isAdmin = user && adminEmails.includes(user.email);
 
   const [newTrip, setNewTrip] = useState({
